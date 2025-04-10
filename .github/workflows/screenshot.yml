@@ -28,7 +28,7 @@ jobs:
           (async () => {
             const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
             const page = await browser.newPage();
-            await page.goto('https://your-website.com', { waitUntil: 'networkidle2' });
+            await page.goto('https://wed-2023.github.io/assignment2-206515744_209406255_assignment2', { waitUntil: 'networkidle2' });
             await page.setViewport({ width: 1280, height: 720 });
             await page.screenshot({ path: 'preview.png' });
             await browser.close();

@@ -37,6 +37,13 @@ jobs:
             await browser.close();
           })();
           EOF
+      - name: Generate timestamp for cache busting
+        run: echo "VERSION=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Update README.md with new version
+        run: |
+          sed -i 's/preview.png?v=[0-9]*/preview.png?v=${VERSION}/' README.md
+
 
       - name: Commit and push if changed
         env:
@@ -44,7 +51,7 @@ jobs:
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
-          git add preview.png
+          git add preview.png README.md
           git diff --cached --quiet || git commit -m "Update screenshot"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD

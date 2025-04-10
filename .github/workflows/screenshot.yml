@@ -1,7 +1,6 @@
 name: Update Live Screenshot
 
 on:
-
   deployment_status:
   workflow_dispatch:
 
@@ -10,10 +9,9 @@ permissions:
 
 jobs:
   screenshot:
-    # Run only if:
-    # 1. It's NOT a deployment_status event, OR
-    # 2. It's a deployment_status AND the build succeeded
-    if: github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success'
+    if: >
+      (github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success') &&
+      github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:

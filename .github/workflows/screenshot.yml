@@ -1,9 +1,10 @@
 name: Update Live Screenshot
 
 on:
-  schedule:
-    - cron: "0 * * * *" # runs every hour — change as needed
-  workflow_dispatch: # allows manual run from GitHub UI
+  push:
+    branches:
+      - main
+  workflow_dispatch:
   
 permissions:
   contents: write

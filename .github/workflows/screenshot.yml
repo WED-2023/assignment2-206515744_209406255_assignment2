@@ -4,11 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - static/**
+      - index.html
   workflow_dispatch:
-  
+
 permissions:
   contents: write
-  
+
 jobs:
   screenshot:
     runs-on: ubuntu-latest
@@ -38,22 +41,21 @@ jobs:
             await browser.close();
           })();
           EOF
+
       - name: Generate timestamp for cache busting
         run: echo "VERSION=$(date +%s)" >> $GITHUB_ENV
 
       - name: Update README.md with new version
         run: |
-          sed -i 's/preview.png?v=[0-9]*/preview.png?v=${VERSION}/' README.md
-
+          sed -i "s/preview.png?v=[0-9]*/preview.png?v=${VERSION}/" README.md
 
       - name: Commit and push if changed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.email "action@github.com"
-          git config user.name "GitHub Action"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git add preview.png README.md
-          git diff --cached --quiet || git commit -m "Update screenshot"
+          git diff --cached --quiet || git commit -m "Update screenshot with cache busting"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD
-

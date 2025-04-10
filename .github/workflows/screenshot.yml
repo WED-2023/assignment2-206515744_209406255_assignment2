@@ -1,0 +1,44 @@
+name: Update Live Screenshot
+
+on:
+  schedule:
+    - cron: "0 * * * *" # runs every hour — change as needed
+  workflow_dispatch: # allows manual run from GitHub UI
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Take screenshot
+        run: |
+          node <<'EOF'
+          const puppeteer = require('puppeteer');
+          (async () => {
+            const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+            const page = await browser.newPage();
+            await page.goto('https://your-website.com', { waitUntil: 'networkidle2' });
+            await page.setViewport({ width: 1280, height: 720 });
+            await page.screenshot({ path: 'preview.png' });
+            await browser.close();
+          })();
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add preview.png
+          git diff --cached --quiet || git commit -m "Update screenshot"
+          git push

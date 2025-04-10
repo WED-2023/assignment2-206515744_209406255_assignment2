@@ -1,12 +1,6 @@
 name: Update Live Screenshot
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - static/**
-      - index.html
   deployment_status:
   workflow_dispatch:
 

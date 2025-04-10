@@ -4,7 +4,10 @@ on:
   schedule:
     - cron: "0 * * * *" # runs every hour — change as needed
   workflow_dispatch: # allows manual run from GitHub UI
-
+  
+permissions:
+  contents: write
+  
 jobs:
   screenshot:
     runs-on: ubuntu-latest

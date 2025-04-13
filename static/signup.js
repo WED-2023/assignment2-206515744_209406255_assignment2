@@ -1,9 +1,10 @@
 // Wait for the DOM to be fully loaded before attaching event listeners
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("signupForm");
-  
     form.addEventListener("submit", function (event) {
       // Grab all input values and trim whitespace
+      event.preventDefault(); 
+
       const username = document.getElementById("signupUsername").value.trim();
       const password = document.getElementById("signupPassword").value;
       const confirmPassword = document.getElementById("signupValidatepassword").value;

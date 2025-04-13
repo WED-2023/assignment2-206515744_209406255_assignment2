@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chicken Invaders</title>
+    <script src="static/ui.js"></script>
     <script src="static/userData.js"></script>
     <script src="static/signup.js"></script>
     <script src="static/login.js"></script>
@@ -14,14 +15,16 @@
     <header>APPLICATION NAME AND LOGO PLACEHOLDER</header>
     <menu>MENU FOR THE APPLICATION PLACEHOLDER</menu>
     <main>
-    <div id="welcome"><p>
+    <!-- Welcome Screen-->
+    <div id="WelcomeScreen" class="screen">
+        <h1>Welcome!</h1>
         <input id = "loginButton" type = "button" value = "Login">
         <input id = "signupButton" type = "button" value = "Sign Up">
-        </p>
+        
     </div>
 
     <!-- Signup Screen-->
-    <div id="signupScreen">
+    <div id="SignupScreen" class="screen">
         <h1>SignUp</h1>
         <form id="signupForm">
           <label for="signupUsername">Username:</label>
@@ -47,7 +50,7 @@
     </div>
 
     <!-- Login Screen-->
-    <div id="LoginScreen">
+    <div id="LoginScreen" class="screen">
         <h1>Login</h1>
         <form id="LoginForm">
           <label for="LoginUsername">Username:</label>
@@ -59,7 +62,7 @@
         </form>
     </div>
 
-<div id="GameScreen">
+<div id="GameScreen" class="screen">
     <h1>GAME</h1>
     <canvas id = "theCanvas" width = "480" height = "600"></canvas> 
 

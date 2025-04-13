@@ -21,21 +21,29 @@ document.addEventListener("DOMContentLoaded", function () {
   
       // Run validations
       if (!username || !password || !confirmPassword || !firstName || !lastName || !email) {
-        errorMessage = "All fields are required.";
-      } else if (!passwordPattern.test(password)) {
-        errorMessage = "Password must be at least 8 characters long and contain both letters and numbers.";
-      } else if (password !== confirmPassword) {
-        errorMessage = "Passwords do not match.";
-      } else if (!namePattern.test(firstName)) {
-        errorMessage = "First name should contain only letters.";
-      } else if (!namePattern.test(lastName)) {
-        errorMessage = "Last name should contain only letters.";
-      } else if (!emailPattern.test(email)) {
-        errorMessage = "Invalid email address.";
+        errorMessage += "All fields are required.\n";
+      } if (!passwordPattern.test(password)) {
+        errorMessage += "Password must be at least 8 characters long and contain both letters and numbers.\n";
+      } if (password !== confirmPassword) {
+        errorMessage += "Passwords do not match.\n";
+      } if (!namePattern.test(firstName)) {
+        errorMessage += "First name should contain only letters.\n";
+      }if (!namePattern.test(lastName)) {
+        errorMessage += "Last name should contain only letters.\n";
+      } if (!emailPattern.test(email)) {
+        errorMessage += "Invalid email address.";
       }
   
-      
-      if (errorMessage) {
+      if(!errorMessage){
+        users.push({
+            username: username,
+            password: password, // Store hashed in real apps!
+            firstName: firstName,
+            lastName: lastName,
+            email: email
+          });
+      }
+      else (errorMessage) {
         event.preventDefault(); 
         alert(errorMessage);    
       }

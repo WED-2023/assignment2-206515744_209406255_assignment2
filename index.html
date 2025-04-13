@@ -4,18 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chicken Invaders</title>
+    <script src="static/userData.js"></script>
     <script src="static/signup.js"></script>
+    <script src="static/login.js"></script>
+    <script src="static/game.js"></script>
 
 </head>
 <body>
     <header>APPLICATION NAME AND LOGO PLACEHOLDER</header>
     <menu>MENU FOR THE APPLICATION PLACEHOLDER</menu>
+    <main>
     <div id="welcome"><p>
         <input id = "loginButton" type = "button" value = "Login">
         <input id = "signupButton" type = "button" value = "Sign Up">
         </p>
     </div>
+
+    <!-- Signup Screen-->
     <div id="signupScreen">
+        <h1>SignUp</h1>
         <form id="signupForm">
           <label for="signupUsername">Username:</label>
           <input id="signupUsername" name="username" type="text" placeholder="Enter username" required>
@@ -37,10 +44,27 @@
     
           <input type="submit" value="Sign Up">
         </form>
-
-        
     </div>
-<div id="game">GAME DIV</div>
+
+    <!-- Login Screen-->
+    <div id="LoginScreen">
+        <h1>Login</h1>
+        <form id="LoginForm">
+          <label for="LoginUsername">Username:</label>
+          <input id="LoginUsername" name="username" type="text" placeholder="Enter username" required>
+    
+          <label for="LoginPassword">Password:</label>
+          <input id="LoginPassword" name="password" type="password" placeholder="Enter password" required>
+          <input type="submit" value="Login">
+        </form>
+    </div>
+
+<div id="GameScreen">
+    <h1>GAME</h1>
+    <canvas id = "theCanvas" width = "480" height = "600"></canvas> 
+
+</div>
+</main>
 <footer>THIS IS THE BOTTOM OF THE PAGE</footer>
 </body>
 </html>

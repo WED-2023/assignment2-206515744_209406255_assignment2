@@ -15,7 +15,10 @@
   // Setup logic after DOM is ready
   document.addEventListener("DOMContentLoaded", function () {
     // Start on the welcome screen
-    showScreen("WelcomeScreen");
+
+    showScreen("GameScreen");
+
+    //showScreen("WelcomeScreen"); for now, need to style the game
 
     // Button listeners
     document.getElementById("loginButton").addEventListener("click", () => {
@@ -26,8 +29,5 @@
       showScreen("signupScreen");
     });
 
-    
 
-    // After successful login/signup, call: showScreen("GameScreen")
-    // We'll connect this next
   });

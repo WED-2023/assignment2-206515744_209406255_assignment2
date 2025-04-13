@@ -1,73 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chicken Invaders</title>
-    <script src="static/ui.js"></script>
-    <script src="static/userData.js"></script>
-    <script src="static/signup.js"></script>
-    <script src="static/login.js"></script>
-    <script src="static/game.js"></script>
-
-</head>
-<body>
+    <script src="static/js/ui.js"></script>
+    <script src="static/js/userData.js"></script>
+    <script src="static/js/signup.js"></script>
+    <script src="static/js/login.js"></script>
+    <script src="static/js/game.js"></script>
+  </head>
+  <body>
     <header>APPLICATION NAME AND LOGO PLACEHOLDER</header>
     <menu>MENU FOR THE APPLICATION PLACEHOLDER</menu>
     <main>
-    <!-- Welcome Screen-->
-    <div id="WelcomeScreen" class="screen">
+      <!-- Welcome Screen-->
+      <div id="WelcomeScreen" class="screen">
         <h1>Welcome!</h1>
-        <input id = "loginButton" type = "button" value = "Login">
-        <input id = "signupButton" type = "button" value = "Sign Up">
-        
-    </div>
+        <input id="loginButton" type="button" value="Login" />
+        <input id="signupButton" type="button" value="Sign Up" />
+      </div>
 
-    <!-- Signup Screen-->
-    <div id="SignupScreen" class="screen">
+      <!-- Signup Screen-->
+      <div id="SignupScreen" class="screen">
         <h1>SignUp</h1>
         <form id="signupForm">
           <label for="signupUsername">Username:</label>
-          <input id="signupUsername" name="username" type="text" placeholder="Enter username" required>
-    
-          <label for="signupPassword">Password:</label>
-          <input id="signupPassword" name="password" type="password" placeholder="Enter password" required>
-    
-          <label for="signupValidatepassword">Confirm Password:</label>
-          <input id="signupValidatepassword" name="confirmPassword" type="password" placeholder="Repeat password" required>
-    
-          <label for="signupFirstname">First Name:</label>
-          <input id="signupFirstname" name="firstname" type="text" placeholder="Enter first name" required>
-    
-          <label for="signupLastname">Last Name:</label>
-          <input id="signupLastname" name="lastname" type="text" placeholder="Enter last name" required>
-    
-          <label for="signupEmail">Email:</label>
-          <input id="signupEmail" name="email" type="email" placeholder="Enter email" required>
-    
-          <input type="submit" value="Sign Up">
-        </form>
-    </div>
+          <input
+            id="signupUsername"
+            name="username"
+            type="text"
+            placeholder="Enter username"
+            required
+          />
 
-    <!-- Login Screen-->
-    <div id="LoginScreen" class="screen">
+          <label for="signupPassword">Password:</label>
+          <input
+            id="signupPassword"
+            name="password"
+            type="password"
+            placeholder="Enter password"
+            required
+          />
+
+          <label for="signupValidatepassword">Confirm Password:</label>
+          <input
+            id="signupValidatepassword"
+            name="confirmPassword"
+            type="password"
+            placeholder="Repeat password"
+            required
+          />
+
+          <label for="signupFirstname">First Name:</label>
+          <input
+            id="signupFirstname"
+            name="firstname"
+            type="text"
+            placeholder="Enter first name"
+            required
+          />
+
+          <label for="signupLastname">Last Name:</label>
+          <input
+            id="signupLastname"
+            name="lastname"
+            type="text"
+            placeholder="Enter last name"
+            required
+          />
+
+          <label for="signupEmail">Email:</label>
+          <input
+            id="signupEmail"
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            required
+          />
+
+          <input type="submit" value="Sign Up" />
+        </form>
+      </div>
+
+      <!-- Login Screen-->
+      <div id="LoginScreen" class="screen">
         <h1>Login</h1>
         <form id="LoginForm">
           <label for="LoginUsername">Username:</label>
-          <input id="LoginUsername" name="username" type="text" placeholder="Enter username" required>
-    
+          <input
+            id="LoginUsername"
+            name="username"
+            type="text"
+            placeholder="Enter username"
+            required
+          />
+
           <label for="LoginPassword">Password:</label>
-          <input id="LoginPassword" name="password" type="password" placeholder="Enter password" required>
-          <input type="submit" value="Login">
+          <input
+            id="LoginPassword"
+            name="password"
+            type="password"
+            placeholder="Enter password"
+            required
+          />
+          <input type="submit" value="Login" />
         </form>
-    </div>
+      </div>
 
-<div id="GameScreen" class="screen">
-    <h1>GAME</h1>
-    <canvas id = "theCanvas" width = "480" height = "600"></canvas> 
+      <div id="GameScreen" class="screen">
+        <h1>GAME</h1>
+        <canvas id="theCanvas" width="480" height="600"></canvas>
+      </div>
+    </main>
+    <footer>
+      THIS IS THE BOTTOM OF THE PAGE
+      <dialog id="aboutDialog">
+        <h2>ABOUT OUR GAME PLACEHOLDER</h2>
+        <p>ABOUT MODAL PLACEHOLDER</p>
+        <button id="closeAbout">Close</button>
+      </dialog>
+      <button id="aboutButton">About</button>
+      <script>
+        const aboutDialog = document.getElementById("aboutDialog");
+        const openBtn = document.getElementById("aboutButton");
+        const closeBtn = document.getElementById("closeAbout");
 
-</div>
-</main>
-<footer>THIS IS THE BOTTOM OF THE PAGE</footer>
-</body>
+        openBtn.addEventListener("click", () => {
+          aboutDialog.showModal(); // 💡 use .show() if you don't want backdrop
+        });
+
+        closeBtn.addEventListener("click", () => {
+          aboutDialog.close();
+        });
+      </script>
+    </footer>
+  </body>
 </html>

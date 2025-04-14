@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
             email: email
           });
       }
-      else (errorMessage) {
+      else if (errorMessage){
         event.preventDefault(); 
         alert(errorMessage);    
       }

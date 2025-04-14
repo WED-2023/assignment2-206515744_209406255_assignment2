@@ -107,31 +107,71 @@
           <input type="submit" value="Login" />
         </form>
       </div>
-
+      <!--Game Screen-->
       <div id="GameScreen" class="screen">
         <h1>GAME</h1>
-        <canvas id="theCanvas" width="480" height="600"></canvas>
+        
+        <canvas id="theCanvas" width="1000" height="1000"></canvas>
       </div>
     </main>
     <footer>
       THIS IS THE BOTTOM OF THE PAGE
       <dialog id="aboutDialog">
-        <h2>ABOUT OUR GAME PLACEHOLDER</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="margin: 5px;">ABOUT OUR GAME PLACEHOLDER</h2>
+          <button id="closeX" 
+            style="
+              font-size: 1rem;
+              background-color: #e74c3c;
+              color: white;
+              border: none;
+              border-radius: 50%;
+              width: 28px;
+              height: 28px;
+              cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 0;
+            ">
+            ✖
+          </button>
+        </div>
         <p>ABOUT MODAL PLACEHOLDER</p>
         <button id="closeAbout">Close</button>
       </dialog>
+      
       <button id="aboutButton">About</button>
       <script>
         const aboutDialog = document.getElementById("aboutDialog");
         const openBtn = document.getElementById("aboutButton");
         const closeBtn = document.getElementById("closeAbout");
-
+        const closeX = document.getElementById("closeX");
+      
         openBtn.addEventListener("click", () => {
-          aboutDialog.showModal(); // 💡 use .show() if you don't want backdrop
+          aboutDialog.showModal();
         });
-
+      
         closeBtn.addEventListener("click", () => {
           aboutDialog.close();
+        });
+      
+        closeX.addEventListener("click", () => {
+          aboutDialog.close();
+        });
+      
+        // Close modal on outside click (backdrop)
+        aboutDialog.addEventListener("click", (event) => {
+          const rect = aboutDialog.getBoundingClientRect();
+          const isInDialog =
+            rect.top <= event.clientY &&
+            event.clientY <= rect.top + rect.height &&
+            rect.left <= event.clientX &&
+            event.clientX <= rect.left + rect.width;
+      
+          if (!isInDialog) {
+            aboutDialog.close();
+          }
         });
       </script>
     </footer>

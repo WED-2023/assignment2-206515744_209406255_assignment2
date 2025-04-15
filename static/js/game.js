@@ -1,6 +1,7 @@
 // Global state
-let canvas, ctx, bgImage, heroImage, enemyFirstRowImage;
-let gameScore = 0,heroLife=3;
+let canvas, ctx;
+let bgImage, heroImage, enemyFirstRowImage,enemySecondRowImage, enemyThirdRowImage,enemyFourthRowImage;
+let gameScore = 0;
 let heroLaserSound,heroHitSound,heroKilledSound;
 let showConfig = true;
 let gameInterval;
@@ -18,6 +19,8 @@ const config = {
   moveLeft: "ArrowLeft",
   moveRight: "ArrowRight",
   gameTime: 2*60, // in seconds
+  heroLives:3,
+
 };
 
 const MENU = {
@@ -65,6 +68,12 @@ function setupGame() {
   bgImage = new Image();
   heroImage = new Image();
   enemyFirstRowImage = new Image();
+  enemySecondRowImage = new Image();
+  enemyThirdRowImage = new Image();
+  enemyFourthRowImage = new Image();
+
+
+
   heroLaserSound = new Audio("static/sounds/herolaser.mp3");
   heroHitSound = new Audio("static/sounds/herohit.mp3");
   heroKilledSound = new Audio("static/sounds/herokilled.mp3");
@@ -87,6 +96,9 @@ function setupGame() {
   bgImage.src = "static/images/background.png";
   heroImage.src = "static/images/hero.png";
   enemyFirstRowImage.src = "static/images/enemyfirstrow.png";
+  enemySecondRowImage.src = "static/images/enemysecondrow.png";
+  enemyThirdRowImage.src = "static/images/enemythirdrow.png";
+  enemyFourthRowImage.src = "static/images/enemyfourthrow.png";
 
   canvas.addEventListener("click", handleClick);
 
@@ -108,15 +120,19 @@ function setupGame() {
 //initialize the enemies array with the given parameters
 function initEnemies() {
    enemies.length = 0;
-   const y = 200;
-   for (let i = 0; i < enemyRow.count; i++) {
-     enemies.push({
-       x: 50 + i * enemyRow.spacing,
-       y: y,
-       width: 70,
-       height: 70,
-     });
-   }
+   const rows = [400,300,200,100];
+   for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const y = rows[rowIndex];
+      for (let i = 0; i < enemyRow.count; i++) {
+        enemies.push({
+          x: 50 + i * enemyRow.spacing,
+          y: y,
+          width: 80,
+          height: 80,
+          row: rowIndex + 1, // 1 = first row, 2 = second row
+        });
+      }
+    }
  }
  //update enemies position and check if they need to reverse direction
  function updateEnemies() {
@@ -176,28 +192,22 @@ function updateLaser() {
    for (let i = lasers.length - 1; i >= 0; i--) {
      const laser = lasers[i];
      laser.y -= laser.speed;
- 
-     // Remove if off screen
      if (laser.y + laser.height < 0) {
        lasers.splice(i, 1);
        continue;
      }
- 
-     // Check for collision with enemies
      for (let j = enemies.length - 1; j >= 0; j--) {
        const enemy = enemies[j];
-       const hit = (
+       if (
          laser.x < enemy.x + enemy.width &&
          laser.x + laser.width > enemy.x &&
          laser.y < enemy.y + enemy.height &&
          laser.y + laser.height > enemy.y
-       );
- 
-       if (hit) {
-         gameScore += 1; // Increase score
+       ) {
+         gameScore+= enemy.row;
          lasers.splice(i, 1);
          enemies.splice(j, 1);
-         break; // Break inner loop since this laser is gone
+         break;
        }
      }
    }
@@ -219,10 +229,8 @@ function updateLaser() {
        laser.y + laser.height > hero.y
      ) {
        enemyLasers.splice(i, 1);
-       heroLife -= 1; // Decrease hero life
-       heroHitSound.play();
-       if (heroLife <= 0) {
-         heroKilledSound.play();
+       config.heroLives--;
+       if (config.heroLives <= 0) {
          stopGameLoop();
          alert("Game Over");
        }
@@ -342,20 +350,33 @@ function draw() {
 
 //drawing the main game loop
 function drawGame() {
-  ctx.drawImage(heroImage, hero.x, hero.y);
-  lasers.forEach(laser => {
-    ctx.fillStyle = "red";
-    ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
-  });
-  enemies.forEach(enemy => {
-   ctx.drawImage(enemyFirstRowImage, enemy.x, enemy.y, enemy.width, enemy.height);
- });
+   ctx.drawImage(heroImage, hero.x, hero.y);
+   lasers.forEach(laser => {
+     ctx.fillStyle = "red";
+     ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+   });
    enemyLasers.forEach(laser => {
-      ctx.fillStyle = "yellow";
-      ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+     ctx.fillStyle = "yellow";
+     ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+   });
+   enemies.forEach(enemy => {
+      switch(enemy.row) {
+        case 4:
+          ctx.drawImage(enemyFourthRowImage, enemy.x, enemy.y, enemy.width, enemy.height);
+          break;
+        case 3:
+          ctx.drawImage(enemyThirdRowImage, enemy.x, enemy.y, enemy.width, enemy.height);
+          break;
+        case 2:
+          ctx.drawImage(enemySecondRowImage, enemy.x, enemy.y, enemy.width, enemy.height);
+          break;
+        case 1:
+          ctx.drawImage(enemyFirstRowImage, enemy.x, enemy.y, enemy.width, enemy.height);
+          break;
+      }
    });
   drawText(`Timer: ${Math.round(config.gameTime)}`, 10, 30, "24px Helvetica", "rgb(250, 250, 250)");
-  drawText(`Lives: ${heroLife}`, 10, 50, "24px Helvetica", "rgb(250, 250, 250)");
+  drawText(`Lives: ${config.heroLives}`, 10, 50, "24px Helvetica", "rgb(250, 250, 250)");
 
   drawText(`Score: ${gameScore}`, canvas.width /2 - 60 , 40, "40px Helvetica", "rgb(250, 250, 250)");  
   

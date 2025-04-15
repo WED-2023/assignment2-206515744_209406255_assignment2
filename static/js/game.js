@@ -47,10 +47,10 @@ const enemyRow = {
 const heroLaserConfig = {
    width: 7,
    height: 10,
-   speed: 8,
+   speed: 5,
  };
  const enemyLaserConfig = {
-   width: 4,
+   width: 7,
    height: 10,
    speed: 5,
  };
@@ -142,13 +142,26 @@ function initEnemies() {
      if (enemy.x + enemy.width >= canvas.width || enemy.x <= 0) {
        shouldReverse = true;
      }
+
+     /*
      if (Math.random() < 0.005) {
        shootEnemyLaser(enemy);
-     }
+     }*/
    });
    if (shouldReverse) enemyRow.direction *= -1;
  }
- 
+ function tryEnemyShooting() {
+  // If there are no enemies, do nothing.
+  if (enemies.length === 0) return;
+  
+  // Check if no enemy laser exists or if the last one has passed 75% of the screen height
+  if (enemyLasers.length === 0 || enemyLasers[enemyLasers.length - 1].y > canvas.height * 0.75) {
+    // Select a random enemy from the array
+    const randomIndex = Math.floor(Math.random() * enemies.length);
+    const randomEnemy = enemies[randomIndex];
+    shootEnemyLaser(randomEnemy);
+  }
+}
 
 //add a new laser to the lasers array when the shoot key is pressed
 function shootLaser() {
@@ -177,6 +190,7 @@ function startGameLoop() {
     updateLaser();
     updateEnemies();
     updateEnemyLasers();
+    tryEnemyShooting();
     config.gameTime -= intervalMs / 1000;
     draw();
   }, intervalMs);
@@ -204,7 +218,7 @@ function updateLaser() {
          laser.y < enemy.y + enemy.height &&
          laser.y + laser.height > enemy.y
        ) {
-         gameScore+= enemy.row;
+         gameScore+= enemy.row *5;
          lasers.splice(i, 1);
          enemies.splice(j, 1);
          break;

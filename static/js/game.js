@@ -5,6 +5,7 @@ let gameScore = 0;
 let heroLaserSound,heroHitSound,heroKilledSound;
 let showConfig = true;
 let gameInterval;
+let timeFromGameStart = 0;
 
 
 
@@ -33,7 +34,7 @@ const MENU = {
 const hero = {
   x: 0,
   y: 0,
-  speed: 7,
+  speed: 9,
   width: 0,
   height: 0,
 };
@@ -41,7 +42,7 @@ const enemyRow = {
    count: 5,
    spacing: 120,
    direction: 1, // 1 for right, -1 for left
-   speed: 3,
+   speed: 2,
  };
 
 const heroLaserConfig = {
@@ -52,7 +53,7 @@ const heroLaserConfig = {
  const enemyLaserConfig = {
    width: 7,
    height: 10,
-   speed: 5,
+   speed: 4,
  };
 
  
@@ -79,13 +80,16 @@ function setupGame() {
   heroKilledSound = new Audio("static/sounds/herokilled.mp3");
 
   let loadedCount = 0;
-  [bgImage, heroImage,enemyFirstRowImage].forEach(img => {
+  [bgImage, heroImage,enemyFirstRowImage,enemySecondRowImage,enemyThirdRowImage,enemyFourthRowImage].forEach(img => {
     img.onload = () => {
       loadedCount++;
-      if (loadedCount === 3) {
-        hero.width = heroImage.width;
-        hero.height = heroImage.height;
-        hero.x = (canvas.width - hero.width) / 2;
+      if (loadedCount === 6) {
+         const heroScale = 1.2;
+         hero.width = heroImage.width * heroScale;
+         hero.height = heroImage.height * heroScale;
+        const minX = canvas.width * 0.3 + hero.width;
+        const maxX = canvas.width * 0.7 - hero.width;
+        hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;        
         hero.y = canvas.height - hero.height - 20;
         initEnemies();
         draw();
@@ -103,7 +107,7 @@ function setupGame() {
   canvas.addEventListener("click", handleClick);
 
   document.addEventListener("keydown", function (e) {
-   const minX = canvas.width * 0.3;
+   const minX = canvas.width * 0.3 + hero.width;
    const maxX = canvas.width * 0.7 - hero.width;
     if (!showConfig) {
       if (e.code === config.moveRight) {
@@ -120,7 +124,7 @@ function setupGame() {
 //initialize the enemies array with the given parameters
 function initEnemies() {
    enemies.length = 0;
-   const rows = [400,300,200,100];
+   const rows = [400,300,200,100]; // y positions for each row of enemies
    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
       const y = rows[rowIndex];
       for (let i = 0; i < enemyRow.count; i++) {
@@ -150,18 +154,28 @@ function initEnemies() {
    });
    if (shouldReverse) enemyRow.direction *= -1;
  }
+
+ //check if the enemies are in the center of the screen and try to shoot
  function tryEnemyShooting() {
-  // If there are no enemies, do nothing.
-  if (enemies.length === 0) return;
-  
-  // Check if no enemy laser exists or if the last one has passed 75% of the screen height
-  if (enemyLasers.length === 0 || enemyLasers[enemyLasers.length - 1].y > canvas.height * 0.75) {
-    // Select a random enemy from the array
-    const randomIndex = Math.floor(Math.random() * enemies.length);
-    const randomEnemy = enemies[randomIndex];
-    shootEnemyLaser(randomEnemy);
-  }
-}
+   if (enemies.length === 0) return;
+ 
+   const leftBound = canvas.width * 0.3;
+   const rightBound = canvas.width * 0.7;
+ 
+   // Only try shooting if no laser or the last one passed 3/4 screen
+   if (enemyLasers.length === 0 || enemyLasers[enemyLasers.length - 1].y > canvas.height * 0.75) {
+     // Filter enemies within the center 40% range
+     const eligibleEnemies = enemies.filter(enemy => 
+       enemy.x + enemy.width  > leftBound && enemy.x + enemy.width  < rightBound
+     );
+ 
+     if (eligibleEnemies.length > 0) {
+       const randomIndex = Math.floor(Math.random() * eligibleEnemies.length);
+       const randomEnemy = eligibleEnemies[randomIndex];
+       shootEnemyLaser(randomEnemy);
+     }
+   }
+ }
 
 //add a new laser to the lasers array when the shoot key is pressed
 function shootLaser() {
@@ -191,7 +205,27 @@ function startGameLoop() {
     updateEnemies();
     updateEnemyLasers();
     tryEnemyShooting();
-    config.gameTime -= intervalMs / 1000;
+    timeFromGameStart += intervalMs / 1000;
+    if(Math.round(timeFromGameStart)===5){ 
+      console.log("5 seconds passed");
+      enemyLaserConfig.speed+=0.02;
+      enemyRow.speed+=0.02;
+    }
+    else if(Math.round(timeFromGameStart)===10){
+      console.log("10 seconds passed");
+      enemyLaserConfig.speed+=0.02;
+      enemyRow.speed+=0.02;
+    }
+    else if(Math.round(timeFromGameStart)===15){ 
+      console.log("15 seconds passed");
+      enemyLaserConfig.speed+=0.02;
+      enemyRow.speed+=0.02;
+    }
+    else if(Math.round(timeFromGameStart)===20){
+      console.log("20 seconds passed");
+      enemyLaserConfig.speed+=0.02;
+      enemyRow.speed+=0.02;
+    }
     draw();
   }, intervalMs);
 }
@@ -205,7 +239,7 @@ function stopGameLoop() {
 function updateLaser() {
    for (let i = lasers.length - 1; i >= 0; i--) {
      const laser = lasers[i];
-     laser.y -= laser.speed;
+     laser.y -= laser.speed
      if (laser.y + laser.height < 0) {
        lasers.splice(i, 1);
        continue;
@@ -243,8 +277,17 @@ function updateLaser() {
        laser.y + laser.height > hero.y
      ) {
        enemyLasers.splice(i, 1);
+       heroHitSound.play();
        config.heroLives--;
+       if (config.heroLives > 0) {
+         const minX = canvas.width * 0.3 + hero.width;
+        const maxX = canvas.width * 0.7 - hero.width;
+        hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX; 
+       }
+
        if (config.heroLives <= 0) {
+         heroKilledSound.volume = 0.5;
+         heroKilledSound.play();
          stopGameLoop();
          alert("Game Over");
        }
@@ -364,7 +407,7 @@ function draw() {
 
 //drawing the main game loop
 function drawGame() {
-   ctx.drawImage(heroImage, hero.x, hero.y);
+   ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height);
    lasers.forEach(laser => {
      ctx.fillStyle = "red";
      ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
@@ -389,9 +432,8 @@ function drawGame() {
           break;
       }
    });
-  drawText(`Timer: ${Math.round(config.gameTime)}`, 10, 30, "24px Helvetica", "rgb(250, 250, 250)");
+  drawText(`Timer: ${Math.round(config.gameTime-timeFromGameStart)}`, 10, 30, "24px Helvetica", "rgb(250, 250, 250)");
   drawText(`Lives: ${config.heroLives}`, 10, 50, "24px Helvetica", "rgb(250, 250, 250)");
-
   drawText(`Score: ${gameScore}`, canvas.width /2 - 60 , 40, "40px Helvetica", "rgb(250, 250, 250)");  
   
 }

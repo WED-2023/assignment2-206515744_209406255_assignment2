@@ -2,7 +2,7 @@
 let canvas, ctx;
 let bgImage, heroImage, enemyFirstRowImage,enemySecondRowImage, enemyThirdRowImage,enemyFourthRowImage;
 let gameScore = 0;
-let heroLaserSound,heroHitSound,heroKilledSound;
+let heroLaserSound,heroHitSound,heroKilledSound,enemyHit1,enemyHit2,enemyHit3;
 let showConfig = true;
 let gameInterval;
 let timeFromGameStart = 0;
@@ -12,6 +12,7 @@ let timeFromGameStart = 0;
 const lasers = [];
 const enemies = [];
 const enemyLasers = [];
+
 
 
 
@@ -78,6 +79,9 @@ function setupGame() {
   heroLaserSound = new Audio("static/sounds/herolaser.mp3");
   heroHitSound = new Audio("static/sounds/herohit.mp3");
   heroKilledSound = new Audio("static/sounds/herokilled.mp3");
+  enemyHit1 = new Audio("static/sounds/enemyhit1.mp3");
+  enemyHit2 = new Audio("static/sounds/enemyhit2.mp3");
+  enemyHit3 = new Audio("static/sounds/enemyhit3.mp3");
 
   let loadedCount = 0;
   [bgImage, heroImage,enemyFirstRowImage,enemySecondRowImage,enemyThirdRowImage,enemyFourthRowImage].forEach(img => {
@@ -252,6 +256,20 @@ function updateLaser() {
          laser.y < enemy.y + enemy.height &&
          laser.y + laser.height > enemy.y
        ) {
+         const num = Math.round(Math.random() * 2);
+         console.log(num);
+         switch(num) {
+            case 0:
+               enemyHit1.play();
+               break;
+            case 1:
+               enemyHit2.play();
+               break;
+            case 2:
+               enemyHit3.play();
+               break;
+
+         }
          gameScore+= enemy.row *5;
          lasers.splice(i, 1);
          enemies.splice(j, 1);

@@ -209,12 +209,26 @@ function startGameLoop() {
       enemyRow.speed += 0.02;
     }
     draw();
+    if (config.gameTime - timeFromGameStart <= 0) {
+      clearInterval(gameInterval); // Stop ticking
+      if (enemies.length === 0) {
+        stopGameLoop("Champion!");
+      } else if (gameScore >= 100) {
+        stopGameLoop("Winner!");
+      } else {
+        stopGameLoop("You can do better!");
+      }
+    } else if (enemies.length === 0) {
+      stopGameLoop("Champion!");
+    }
   }, intervalMs);
 }
 
-function stopGameLoop() {
-  clearInterval(gameInterval);
-}
+function stopGameLoop(message) {
+   clearInterval(gameInterval);
+   draw(); // redraw last frame
+   drawMessage(message);
+ }
 
 function updateLaser() {
   for (let i = lasers.length - 1; i >= 0; i--) {
@@ -276,11 +290,10 @@ function updateEnemyLasers() {
         hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
       }
       if (config.heroLives <= 0) {
-        heroKilledSound.volume = 0.5;
-        heroKilledSound.play();
-        stopGameLoop();
-        alert("Game Over");
-      }
+         heroKilledSound.volume = 0.5;
+         heroKilledSound.play();
+         stopGameLoop("You Lost!");
+       }
     }
   }
 }

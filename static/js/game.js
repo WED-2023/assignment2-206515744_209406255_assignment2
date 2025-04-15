@@ -1,5 +1,6 @@
 // Global state
 let canvas, ctx, bgImage, heroImage;
+let heroLaserSound,heroKilledSound;
 let showConfig = true;
 let gameInterval;
 
@@ -48,6 +49,8 @@ function setupGame() {
 
   bgImage = new Image();
   heroImage = new Image();
+  heroLaserSound = new Audio("static/sounds/herolaser.mp3");
+  heroKilledSound = new Audio("static/sounds/herokilled.mp3");
 
   let loadedCount = 0;
   [bgImage, heroImage].forEach(img => {
@@ -83,6 +86,7 @@ function setupGame() {
 
 //add a new laser to the lasers array when the shoot key is pressed
 function shootLaser() {
+  heroLaserSound.play();
   const laser = {
     x: hero.x + hero.width / 2 - 2,
     y: hero.y,

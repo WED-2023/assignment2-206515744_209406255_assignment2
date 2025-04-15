@@ -2,7 +2,13 @@
 let canvas, ctx, bgImage, heroImage;
 let showConfig = true;
 let gameInterval;
-let gameRunTime = 0;
+
+
+
+const lasers = [];
+const enemies = [];
+
+
 
 const config = {
   shootKey: "Space",
@@ -26,10 +32,16 @@ const hero = {
   height: 0,
 };
 
-const lasers = [];
+const heroLaserConfig = {
+   width: 4,
+   height: 10,
+   speed: 8,
+ };
+
 
 window.addEventListener("load", setupGame);
 
+// setupGame is called when the app first launches
 function setupGame() {
   canvas = document.getElementById("theCanvas");
   ctx = canvas.getContext("2d");
@@ -69,17 +81,17 @@ function setupGame() {
   });
 }
 
+//add a new laser to the lasers array when the shoot key is pressed
 function shootLaser() {
   const laser = {
     x: hero.x + hero.width / 2 - 2,
     y: hero.y,
-    width: 4,
-    height: 10,
-    speed: 8,
+    ...heroLaserConfig
   };
   lasers.push(laser);
 }
 
+// Start a new game
 function startGameLoop() {
   const intervalMs = 1000 / 60; // 30 FPS
   gameInterval = setInterval(() => {
@@ -89,12 +101,13 @@ function startGameLoop() {
   }, intervalMs);
 }
 
+// Stop the game loop
 function stopGameLoop() {
   clearInterval(gameInterval);
 }
 
+// Update laser positions and remove off-screen lasers
 function updateLaser() {
-  // Update laser positions
   for (let i = lasers.length - 1; i >= 0; i--) {
     lasers[i].y -= lasers[i].speed;
     if (lasers[i].y + lasers[i].height < 0) {
@@ -103,6 +116,7 @@ function updateLaser() {
   }
 }
 
+// Handle click events for the config menu
 function handleClick(event) {
   if (!showConfig) return;
 
@@ -155,16 +169,18 @@ function handleClick(event) {
   }
 
   // Decrease game time
-  if (isInBox(x, y, startX + 265, startY + 220, 30, 30) && config.gameTime > 2) {
+  if (isInBox(x, y, startX + 265, startY + 220, 30, 30) && config.gameTime > 120) {
     config.gameTime--;
     draw();
   }
 }
 
+// Check if the click is within the bounds of a box
 function isInBox(x, y, boxX, boxY, boxW, boxH) {
   return x >= boxX && x <= boxX + boxW && y >= boxY && y <= boxY + boxH;
 }
 
+//draw the config menu
 function drawConfigMenu() {
   const { startX, startY, width, height } = MENU;
   ctx.fillStyle = "#000000aa";
@@ -181,19 +197,21 @@ function drawConfigMenu() {
   drawText(`Move Right: ${config.moveRight}`, startX + 20, startY + 190);
   drawButton(startX + 250, startY + 170, 100, 30, "Change Key", "blue");
 
-  drawText(`Game Time (min): ${config.gameTime}`, startX + 20, startY + 240);
+  drawText(`Game Time (secs): ${config.gameTime}`, startX + 20, startY + 240);
   drawButton(startX + 265, startY + 220, 30, 30, "-", "red");
   drawButton(startX + 305, startY + 220, 30, 30, "+", "green");
 
   drawButton(startX + 20, startY + 270, 100, 30, "Start Game", "green");
 }
 
+//draw text with the given parameters
 function drawText(text, x, y, font = "20px Arial", color = "white") {
   ctx.font = font;
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 }
 
+//draw the button with the given parameters
 function drawButton(x, y, width, height, label, bgColor) {
   ctx.fillStyle = bgColor;
   ctx.fillRect(x, y, width, height);
@@ -202,6 +220,8 @@ function drawButton(x, y, width, height, label, bgColor) {
   ctx.fillText(label, x + 8, y + height / 1.5);
 }
 
+//if config.showConfig is true, draw the config menu
+//if config.showConfig is false, draw the game
 function draw() {
   canvas.width = canvas.width; // Clear canvas
   ctx.drawImage(bgImage, 0, 0);
@@ -209,6 +229,7 @@ function draw() {
   drawGame();
 }
 
+//drawing the main game loop
 function drawGame() {
   ctx.drawImage(heroImage, hero.x, hero.y);
   lasers.forEach(laser => {

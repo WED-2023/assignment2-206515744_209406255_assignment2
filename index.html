@@ -14,111 +14,85 @@
     <header>APPLICATION NAME AND LOGO PLACEHOLDER</header>
     <menu>MENU FOR THE APPLICATION PLACEHOLDER</menu>
     <main>
-      <!-- Welcome Screen-->
+      <!-- Welcome Screen -->
       <div id="WelcomeScreen" class="screen">
         <h1>Welcome!</h1>
+        <p>
+          <span>
+            Ilay Cohen, 206515744,
+            <a href="https://wed-2023.github.io/206515744/" target="_blank">
+              My Site Link
+            </a>
+          </span>
+          <br />
+          <span>
+            Victor Gavrilenko, 209406255,
+            <a href="https://wed-2023.github.io/209406255/" target="_blank">
+              My Site Link
+            </a>
+          </span>
+        </p>
+        <p>Welcome to our game! Please login or sign up to continue.</p>
+
         <input id="loginButton" type="button" value="Login" />
         <input id="signupButton" type="button" value="Sign Up" />
       </div>
 
-      <!-- Signup Screen-->
-      <div id="SignupScreen" class="screen">
+      <!-- Signup Screen -->
+      <div id="signupScreen" class="screen">
         <h1>SignUp</h1>
         <form id="signupForm">
           <label for="signupUsername">Username:</label>
-          <input
-            id="signupUsername"
-            name="username"
-            type="text"
-            placeholder="Enter username"
-            required
-          />
+          <input id="signupUsername" name="username" type="text" placeholder="Enter username" required />
 
           <label for="signupPassword">Password:</label>
-          <input
-            id="signupPassword"
-            name="password"
-            type="password"
-            placeholder="Enter password"
-            required
-          />
+          <input id="signupPassword" name="password" type="password" placeholder="Enter password" required />
 
           <label for="signupValidatepassword">Confirm Password:</label>
-          <input
-            id="signupValidatepassword"
-            name="confirmPassword"
-            type="password"
-            placeholder="Repeat password"
-            required
-          />
+          <input id="signupValidatepassword" name="confirmPassword" type="password" placeholder="Repeat password" required />
 
           <label for="signupFirstname">First Name:</label>
-          <input
-            id="signupFirstname"
-            name="firstname"
-            type="text"
-            placeholder="Enter first name"
-            required
-          />
+          <input id="signupFirstname" name="firstname" type="text" placeholder="Enter first name" required />
 
           <label for="signupLastname">Last Name:</label>
-          <input
-            id="signupLastname"
-            name="lastname"
-            type="text"
-            placeholder="Enter last name"
-            required
-          />
+          <input id="signupLastname" name="lastname" type="text" placeholder="Enter last name" required />
 
           <label for="signupEmail">Email:</label>
-          <input
-            id="signupEmail"
-            name="email"
-            type="email"
-            placeholder="Enter email"
-            required
-          />
+          <input id="signupEmail" name="email" type="email" placeholder="Enter email" required />
 
-          <input type="submit" value="Sign Up" />
+          <input type="submit" value="Submit" />
         </form>
+        <input type="button" value="Go to Login" onclick="showScreen('LoginScreen')" />
       </div>
 
-      <!-- Login Screen-->
+      <!-- Login Screen -->
       <div id="LoginScreen" class="screen">
         <h1>Login</h1>
         <form id="LoginForm">
           <label for="LoginUsername">Username:</label>
-          <input
-            id="LoginUsername"
-            name="username"
-            type="text"
-            placeholder="Enter username"
-            required
-          />
+          <input id="LoginUsername" name="username" type="text" placeholder="Enter username" required />
 
           <label for="LoginPassword">Password:</label>
-          <input
-            id="LoginPassword"
-            name="password"
-            type="password"
-            placeholder="Enter password"
-            required
-          />
+          <input id="LoginPassword" name="password" type="password" placeholder="Enter password" required />
+
           <input type="submit" value="Login" />
         </form>
       </div>
-      <!--Game Screen-->
+
+      <!-- Game Screen -->
       <div id="GameScreen" class="screen">
         <h1>GAME</h1>
         <canvas id="theCanvas" width="1000" height="1000"></canvas>
       </div>
     </main>
+
     <footer>
       THIS IS THE BOTTOM OF THE PAGE
       <dialog id="aboutDialog">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="margin: 5px;">ABOUT OUR GAME PLACEHOLDER</h2>
-          <button id="closeX" 
+          <h2 style="margin: 5px;">Game Rules</h2>
+          <button
+            id="closeX"
             style="
               font-size: 1rem;
               background-color: #e74c3c;
@@ -136,30 +110,71 @@
             ✖
           </button>
         </div>
-        <p>ABOUT MODAL PLACEHOLDER</p>
+
+        <div style="font-size: 1.1rem; line-height: 1.6;">
+          <p>
+            <strong>Chicken Invaders</strong> is a fast-paced space shooter game where you control a lone hero spaceship defending Earth from waves of invading alien chickens.
+          </p>
+
+          <p>
+            The goal is to eliminate all enemies before time runs out or before your lives are depleted. Each destroyed enemy gives you points. Clear all enemies in time to become the <strong>Champion</strong>!
+          </p>
+
+          <p><strong>Game Rules:</strong></p>
+          <ul>
+            <li>You have <strong>3 lives</strong>. If hit by enemy lasers 3 times, it's game over.</li>
+            <li>You can move <strong>left, right, up, and down</strong> — but only within the bottom 40% of the screen.</li>
+            <li>Use your chosen <strong>Shoot key</strong> to fire lasers and destroy enemies.</li>
+            <li>Enemies move horizontally and descend after hitting the screen edge — but won't enter your movement zone.</li>
+            <li>Only one enemy laser can be fired at a time per row.</li>
+            <li>The game ends if:
+              <ul>
+                <li>You lose all your lives → <strong>You Lost!</strong></li>
+                <li>Time runs out:
+                  <ul>
+                    <li>Score &lt; 100 → <strong>You can do better!</strong></li>
+                    <li>Score ≥ 100 → <strong>Winner!</strong></li>
+                  </ul>
+                </li>
+                <li>You destroy all enemies → <strong>Champion!</strong></li>
+              </ul>
+            </li>
+          </ul>
+
+          <p>
+            Leaderboards display the top 5 scores from the current session, tied to your login name. Use the configuration menu to customize your controls and game duration before starting.
+          </p>
+
+          <p>
+            This project was inspired by classic arcade shooters and developed as part of an educational assignment. For reference, see the original project:
+            <a href="https://github.com/WED-2023/assignment2-206515744_209406255_assignment2" target="_blank">
+              https://github.com/WED-2023/assignment2-206515744_209406255_assignment2
+            </a>
+          </p>
+        </div>
+
         <button id="closeAbout">Close</button>
       </dialog>
-      
+
       <button id="aboutButton">About</button>
+
       <script>
         const aboutDialog = document.getElementById("aboutDialog");
         const openBtn = document.getElementById("aboutButton");
         const closeBtn = document.getElementById("closeAbout");
         const closeX = document.getElementById("closeX");
-      
-        openBtn.addEventListener("click", () => {
-          aboutDialog.showModal();
+
+        openBtn.addEventListener("click", () => aboutDialog.showModal());
+        closeBtn.addEventListener("click", () => aboutDialog.close());
+        closeX.addEventListener("click", () => aboutDialog.close());
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && aboutDialog.open) {
+            aboutDialog.close();
+          }
         });
-      
-        closeBtn.addEventListener("click", () => {
-          aboutDialog.close();
-        });
-      
-        closeX.addEventListener("click", () => {
-          aboutDialog.close();
-        });
-      
-        // Close modal on outside click (backdrop)
+
+        // Close modal on backdrop click
         aboutDialog.addEventListener("click", (event) => {
           const rect = aboutDialog.getBoundingClientRect();
           const isInDialog =
@@ -167,7 +182,7 @@
             event.clientY <= rect.top + rect.height &&
             rect.left <= event.clientX &&
             event.clientX <= rect.left + rect.width;
-      
+
           if (!isInDialog) {
             aboutDialog.close();
           }

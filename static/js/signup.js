@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             lastName: lastName,
             email: email
           });
+        alert("Signup successful!"); // Replace with actual signup logic
       }
       else if (errorMessage){
         event.preventDefault(); 

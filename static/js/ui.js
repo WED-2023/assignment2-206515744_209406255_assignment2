@@ -16,18 +16,16 @@
   document.addEventListener("DOMContentLoaded", function () {
     // Start on the welcome screen
 
-    showScreen("GameScreen");
-
-    //showScreen("WelcomeScreen"); //for now, need to style the game
-
     // Button listeners
     document.getElementById("loginButton").addEventListener("click", () => {
       showScreen("LoginScreen");
     });
 
     document.getElementById("signupButton").addEventListener("click", () => {
-      showScreen("signupScreen");
+      showScreen("SignupScreen");
     });
+    
+    showScreen("WelcomeScreen"); //for now, need to style the game
 
 
   });

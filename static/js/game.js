@@ -43,7 +43,7 @@ const MENU = {
 const hero = {
   x: 0,
   y: 0,
-  speed: 9,
+  speed: 10,
   width: 0,
   height: 0,
 };
@@ -73,7 +73,9 @@ window.addEventListener("load", setupGame);
 
 function setupGame() {
   canvas = document.getElementById("theCanvas");
-  ctx = canvas.getContext("2d");
+canvas.width = Math.min(window.innerWidth - 40, 960);
+canvas.height = Math.min(window.innerHeight - 150, 720);
+ctx = canvas.getContext("2d");
 
   bgImage = new Image();
   heroImage = new Image();
@@ -102,8 +104,8 @@ function setupGame() {
         const heroScale = 1.2;
         hero.width = heroImage.width * heroScale;
         hero.height = heroImage.height * heroScale;
-        const minX = canvas.width * 0.3 + hero.width;
-        const maxX = canvas.width * 0.7 - hero.width;
+        const minX = canvas.width * 0.2 + hero.width;
+        const maxX = canvas.width * 0.8 - hero.width;
         hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
         hero.y = canvas.height - hero.height - 20;
         initEnemies();
@@ -123,8 +125,8 @@ function setupGame() {
 
   // Game controls for hero actions while playing remain unchanged.
   document.addEventListener("keydown", function(e) {
-   const minX = canvas.width * 0.2 + hero.width;
-   const maxX = canvas.width * 0.8 - hero.width;
+    const minX = canvas.width * 0.2 + hero.width;
+    const maxX = canvas.width * 0.8 - hero.width;
    const minY = canvas.height * 0.7;
    const maxY = canvas.height - hero.height - 20;
  
@@ -145,18 +147,21 @@ function setupGame() {
 }
 
 function initEnemies() {
+  const enemySize = canvas.width * 0.07;  // Add at the top of initEnemies
+  enemyRow.spacing = canvas.width * 0.14; // Adjust spacing based on canvas width
+
   enemies.length = 0;
   enemyRowSpeed=enemyRow.speed;
   enemyLaserSpeed=enemyLaserConfig.speed;
-  const rows = [400, 300, 200, 100]; // y positions for each row of enemies
-  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-    const y = rows[rowIndex];
+  const rowY = [0.4, 0.3, 0.2, 0.1]; // top 40%
+  for (let rowIndex = 0; rowIndex < rowY.length; rowIndex++) {
+    const y = canvas.height * rowY[rowIndex];
     for (let i = 0; i < enemyRow.count; i++) {
       enemies.push({
         x: 50 + i * enemyRow.spacing,
         y: y,
-        width: 80,
-        height: 80,
+        width: enemySize,
+        height: enemySize,
         row: rowIndex + 1, // row number: 1 = first row, etc.
       });
     }
@@ -208,8 +213,8 @@ function updateEnemies() {
  function tryEnemyShooting() {
    if (enemies.length === 0) return;
  
-   const minX = canvas.width * 0.3 + hero.width;
-   const maxX = canvas.width * 0.7 - hero.width;
+   const minX = canvas.width * 0.2 + hero.width;
+   const maxX = canvas.width * 0.8 - hero.width;
  
    const eligibleEnemies = enemies.filter(enemy => {
      const centerX = enemy.x + enemy.width / 2;
@@ -256,21 +261,17 @@ function startGameLoop() {
     tryEnemyShooting();
     timeFromGameStart += intervalMs / 1000;
     if (Math.round(timeFromGameStart) === 5) {
-      console.log("5 seconds passed");
-      enemyRowSpeed += 0.02;
-      enemyLaserSpeed += 0.02;
+      enemyRowSpeed += 0.015;
+      enemyLaserSpeed += 0.015;
     } else if (Math.round(timeFromGameStart) === 10) {
-      console.log("10 seconds passed");
-      enemyRowSpeed += 0.02;
-      enemyLaserSpeed += 0.02;
+      enemyRowSpeed += 0.015;
+      enemyLaserSpeed += 0.015;
     } else if (Math.round(timeFromGameStart) === 15) {
-      console.log("15 seconds passed");
-      enemyRowSpeed += 0.02;
-      enemyLaserSpeed += 0.02;
+      enemyRowSpeed += 0.015;
+      enemyLaserSpeed += 0.015;
     } else if (Math.round(timeFromGameStart) === 20) {
-      console.log("20 seconds passed");
-      enemyRowSpeed += 0.02;
-      enemyLaserSpeed += 0.02;
+      enemyRowSpeed += 0.015;
+      enemyLaserSpeed += 0.015;
     }
     draw();
     if (config.gameTime - timeFromGameStart <= 0) {
@@ -328,10 +329,9 @@ function stopGameLoop(message) {
      hero.width = heroImage.width * heroScale;
      hero.height = heroImage.height * heroScale;
  
-     const minX = canvas.width * 0.3 + hero.width;
-     const maxX = canvas.width * 0.7 - hero.width;
-     const minY = canvas.height * 0.6;
-     const maxY = canvas.height - hero.height - 20;
+     const minX = canvas.width * 0.2 + hero.width;
+     const maxX = canvas.width * 0.8 - hero.width;
+   
  
      hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
      hero.y = canvas.height - hero.height - 20;
@@ -397,8 +397,8 @@ function updateEnemyLasers() {
       heroHitSound.play();
       config.heroLives--;
       if (config.heroLives > 0) {
-        const minX = canvas.width * 0.3 + hero.width;
-        const maxX = canvas.width * 0.7 - hero.width;
+        const minX = canvas.width * 0.2 + hero.width;
+        const maxX = canvas.width * 0.8 - hero.width;
         hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
       }
       if (config.heroLives <= 0) {
@@ -559,9 +559,9 @@ function draw() {
     
     if (gameOverMessage) {
       drawMessage(gameOverMessage);
-      drawText("Leaderboard:", canvas.width - 220, 30, "20px Helvetica", "white");
+      drawText("Leaderboard:", canvas.width - 200, 30, "20px Helvetica", "white");
       leaderboard.forEach((entry, i) => {
-        drawText(`${i + 1}. ${entry.name}: ${entry.score}`, canvas.width - 220, 60 + i * 25, "18px Helvetica", "white");
+        drawText(`${i + 1}. ${entry.name}: ${entry.score}`, canvas.width - 200, 60 + i * 25, "18px Helvetica", "white");
       });
     }
  }
@@ -595,7 +595,7 @@ function drawGame() {
   });
   drawText(`Timer: ${Math.round(config.gameTime - timeFromGameStart)}`, 10, 30, "24px Helvetica", "rgb(250, 250, 250)");
   drawText(`Lives: ${config.heroLives}`, 10, 50, "24px Helvetica", "rgb(250, 250, 250)");
-  drawText(`Score: ${gameScore}`, canvas.width / 2 - 70, 40, "40px Helvetica", "rgb(250, 250, 250)");
+  drawText(`Score: ${gameScore}`, canvas.width / 2 - 80, 40, "40px Helvetica", "rgb(250, 250, 250)");
   drawButton(canvas.width - 170, canvas.height - 60, 150, 40, "Start New Game", "orange");
 
 }

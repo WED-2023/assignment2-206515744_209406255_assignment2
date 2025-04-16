@@ -25,7 +25,8 @@
       showScreen("SignupScreen");
     });
     
-    showScreen("WelcomeScreen"); //for now, need to style the game
+    //showScreen("WelcomeScreen"); //for now, need to style the game
+    showScreen("GameScreen"); //for now, need to style the game
 
 
   });

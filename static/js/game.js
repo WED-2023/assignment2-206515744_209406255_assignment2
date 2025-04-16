@@ -9,6 +9,9 @@ let gameInterval;
 let timeFromGameStart = 0;
 let gameOverMessage = null;
 let gameEnded = false;
+let enemyRowMaxY = null; // Will hold the max Y for each row once bottom hits danger zone
+
+
 
 window.currentUser={username:"p",password:"testuser",firstName:"test",lastName:"test",email:"test@test.com"};
 
@@ -24,13 +27,15 @@ const config = {
   shootKey: "Space",
   moveLeft: "ArrowLeft",
   moveRight: "ArrowRight",
+  moveUp: "ArrowUp",
+  moveDown: "ArrowDown",
   gameTime: 2 * 60, // in seconds
   heroLives: 3,
 };
 
 const MENU = {
   width: 500,
-  height: 400,
+  height: 450,
   get startX() { return (canvas.width - this.width) / 2; },
   get startY() { return (canvas.height - this.height) / 2; },
 };
@@ -48,6 +53,7 @@ const enemyRow = {
   spacing: 120,
   direction: 1, // 1 for right, -1 for left
   speed: 2,
+  enemyDropDistance:20, 
 };
 
 const heroLaserConfig = {
@@ -61,6 +67,7 @@ const enemyLaserConfig = {
   height: 10,
   speed: 4,
 };
+//const enemyMaxY = canvas.height * 0.6 - enemyHeight;
 
 window.addEventListener("load", setupGame);
 
@@ -114,18 +121,25 @@ function setupGame() {
 
   // Game controls for hero actions while playing remain unchanged.
   document.addEventListener("keydown", function(e) {
-    const minX = canvas.width * 0.3 + hero.width;
-    const maxX = canvas.width * 0.7 - hero.width;
-    if (!showConfig) {
-      if (e.code === config.moveRight) {
-        hero.x = Math.min(maxX, hero.x + hero.speed);
-      } else if (e.code === config.moveLeft) {
-        hero.x = Math.max(minX, hero.x - hero.speed);
-      } else if (e.code === config.shootKey) {
-        shootLaser();
-      }
-    }
-  });
+   const minX = canvas.width * 0.2 + hero.width;
+   const maxX = canvas.width * 0.8 - hero.width;
+   const minY = canvas.height * 0.7;
+   const maxY = canvas.height - hero.height - 20;
+ 
+   if (!showConfig) {
+     if (e.code === config.moveRight) {
+       hero.x = Math.min(maxX, hero.x + hero.speed);
+     } else if (e.code === config.moveLeft) {
+       hero.x = Math.max(minX, hero.x - hero.speed);
+     } else if (e.code === config.moveUp) {
+       hero.y = Math.max(minY, hero.y - hero.speed);
+     } else if (e.code === config.moveDown) {
+       hero.y = Math.min(maxY, hero.y + hero.speed);
+     } else if (e.code === config.shootKey) {
+       shootLaser();
+     }
+   }
+ });
 }
 
 function initEnemies() {
@@ -148,36 +162,68 @@ function initEnemies() {
 }
 
 function updateEnemies() {
-  let shouldReverse = false;
-  enemies.forEach(enemy => {
-    enemy.x += enemyRow.direction * enemyRowSpeed;
-    if (enemy.x + enemy.width >= canvas.width || enemy.x <= 0) {
-      shouldReverse = true;
-    }
-  });
-  if (shouldReverse) enemyRow.direction *= -1;
-}
-
-function tryEnemyShooting() {
-  if (enemies.length === 0) return;
-
-
-  // Only try shooting if no enemy laser exists or the last one has passed 75% of the canvas height
-  if (enemyLasers.length === 0 || enemyLasers[enemyLasers.length - 1].y > canvas.height * 0.75) {
-    // Filter enemies that are within the center 40% range
-    const minX = canvas.width * 0.3 + hero.width;
-    const maxX = canvas.width * 0.7 - hero.width;
-    const eligibleEnemies = enemies.filter(enemy => {
-    const enemyCenter = enemy.x + enemy.width / 2;
-    return enemyCenter >= minX && enemyCenter <= maxX;
+   let shouldReverse = false;
+ 
+   enemies.forEach(enemy => {
+     enemy.x += enemyRow.direction * enemyRowSpeed;
+     if (enemy.x + enemy.width >= canvas.width || enemy.x <= 0) {
+       shouldReverse = true;
+     }
    });
-    if (eligibleEnemies.length > 0) {
-      const randomIndex = Math.floor(Math.random() * eligibleEnemies.length);
-      const randomEnemy = eligibleEnemies[randomIndex];
-      shootEnemyLaser(randomEnemy);
-    }
-  }
+ 
+   if (shouldReverse) {
+     enemyRow.direction *= -1;
+ 
+     // Check if bottom row (row 1) is in the danger zone
+     const bottomRowEnemies = enemies.filter(e => e.row === 1);
+     const dangerY = canvas.height * 0.6;
+ 
+     const bottomInDanger = bottomRowEnemies.some(e => e.y + e.height >= dangerY);
+ 
+     if (bottomInDanger && !enemyRowMaxY) {
+       // Freeze rows at their current heights
+       enemyRowMaxY = {};
+       enemies.forEach(e => {
+         if (!(e.row in enemyRowMaxY)) {
+           enemyRowMaxY[e.row] = e.y; // Lock each row at its current Y
+         }
+       });
+     }
+ 
+     enemies.forEach(enemy => {
+       const proposedY = enemy.y + enemyRow.enemyDropDistance;
+ 
+       if (enemyRowMaxY && enemy.row in enemyRowMaxY) {
+         // Respect frozen Y limit
+         enemy.y = Math.min(proposedY, enemyRowMaxY[enemy.row]);
+       } else {
+         enemy.y = proposedY;
+       }
+     });
+   }
+ }
+
+ function tryEnemyShooting() {
+   if (enemies.length === 0) return;
+ 
+   const minX = canvas.width * 0.3 + hero.width;
+   const maxX = canvas.width * 0.7 - hero.width;
+ 
+   const eligibleEnemies = enemies.filter(enemy => {
+     const centerX = enemy.x + enemy.width / 2;
+     return centerX >= minX && centerX <= maxX;
+   });
+ 
+   if (eligibleEnemies.length === 0) return;
+ 
+   const maxEnemyY = Math.max(...eligibleEnemies.map(e => e.y + e.height));
+   const spacing = canvas.height * 0.25; // ~200px if canvas is 800px tall
+
+   if (enemyLasers.length === 0 ||enemyLasers[enemyLasers.length - 1].y > maxEnemyY + spacing) {
+  const randomEnemy = eligibleEnemies[Math.floor(Math.random() * eligibleEnemies.length)];
+  shootEnemyLaser(randomEnemy);
 }
+ }
 
 function shootLaser() {
   heroLaserSound.play();
@@ -257,33 +303,41 @@ function stopGameLoop(message) {
  }
  
  function resetGame(wasEnded) {
-   // 🚨 Prevent multiple intervals from overlapping
    clearInterval(gameInterval);
-   // Reset state
-   enemyRowSpeed = enemyRow.speed;
-   enemyLaserSpeed = enemyLaserConfig.speed;
-
-   lasers.length = 0;
-   enemyLasers.length = 0;
-   enemies.length = 0;
-   gameScore = 0;
-   config.heroLives = 3;
-   timeFromGameStart = 0;
-   gameEnded = false;
-   gameOverMessage = null;
-   enemyRowSpeed = enemyRow.speed;
-   enemyLaserSpeed = enemyLaserConfig.speed;
+   gameBGM.pause();
+   gameBGM.currentTime = 0;
  
-   const heroScale = 1.2;
-   hero.width = heroImage.width * heroScale;
-   hero.height = heroImage.height * heroScale;
-   const minX = canvas.width * 0.3 + hero.width;
-   const maxX = canvas.width * 0.7 - hero.width;
-   hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
-   hero.y = canvas.height - hero.height - 20;
+   // Draw message for visual feedback (optional)
+   drawMessage("Restarting...");
  
-   initEnemies();
-   startGameLoop();
+   // Short delay before resetting
+   setTimeout(() => {
+     // Reset state
+     lasers.length = 0;
+     enemyLasers.length = 0;
+     enemies.length = 0;
+     gameScore = 0;
+     config.heroLives = 3;
+     timeFromGameStart = 0;
+     gameEnded = false;
+     gameOverMessage = null;
+     enemyRowMaxY = null;
+ 
+     const heroScale = 1.2;
+     hero.width = heroImage.width * heroScale;
+     hero.height = heroImage.height * heroScale;
+ 
+     const minX = canvas.width * 0.3 + hero.width;
+     const maxX = canvas.width * 0.7 - hero.width;
+     const minY = canvas.height * 0.6;
+     const maxY = canvas.height - hero.height - 20;
+ 
+     hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+     hero.y = canvas.height - hero.height - 20;
+ 
+     initEnemies();
+     startGameLoop();
+   }, 800); // 800ms delay
  }
  
  
@@ -402,7 +456,7 @@ function handleClick(event) {
    const { startX, startY } = MENU;
  
    // Start Game button
-   if (isInBox(x, y, startX + 20, startY + 270, 100, 30)) {
+   if (isInBox(x, y,startX + 20, startY + 370, 100, 30)) {
      showConfig = false;
      startGameLoop();
    }
@@ -421,15 +475,23 @@ function handleClick(event) {
    if (isInBox(x, y, startX + 250, startY + 170, 100, 30)) {
      bindKey("moveRight");
    }
+   if (isInBox(x, y, startX + 250, startY + 220, 100, 30)) {
+      bindKey("moveUp");
+    }
+    
+    // Change Move Down Key
+    if (isInBox(x, y, startX + 250, startY + 270, 100, 30)) {
+      bindKey("moveDown");
+    }
  
    // Increase game time
-   if (isInBox(x, y, startX + 305, startY + 220, 30, 30)) {
+   if (isInBox(x, y, startX + 305, startY + 320, 30, 30)) {
      config.gameTime++;
      draw();
    }
  
    // Decrease game time
-   if (isInBox(x, y, startX + 265, startY + 220, 30, 30) && config.gameTime > 120) {
+   if (isInBox(x, y, startX + 265, startY + 320, 30, 30) && config.gameTime > 120) {
      config.gameTime--;
      draw();
    }
@@ -441,22 +503,35 @@ function isInBox(x, y, boxX, boxY, boxW, boxH) {
 }
 
 function drawConfigMenu() {
-  const { startX, startY, width, height } = MENU;
-  ctx.fillStyle = "#000000aa";
-  ctx.fillRect(startX, startY, width, height);
+   const { startX, startY, width, height } = MENU;
+   ctx.fillStyle = "#000000aa";
+   ctx.fillRect(startX, startY, width, height);
+ 
+   drawText("Game Settings", startX + 10, startY + 40, "28px Arial", "white");
+ 
+   drawText(`Shoot Key: ${config.shootKey}`, startX + 20, startY + 90);
+   drawButton(startX + 250, startY + 70, 100, 30, "Change Key", "blue");
+ 
+   drawText(`Move Left: ${config.moveLeft}`, startX + 20, startY + 140);
+   drawButton(startX + 250, startY + 120, 100, 30, "Change Key", "blue");
+ 
+   drawText(`Move Right: ${config.moveRight}`, startX + 20, startY + 190);
+   drawButton(startX + 250, startY + 170, 100, 30, "Change Key", "blue");
+ 
+   // ✅ Add Up
+   drawText(`Move Up: ${config.moveUp}`, startX + 20, startY + 240);
+   drawButton(startX + 250, startY + 220, 100, 30, "Change Key", "blue");
+ 
+   // ✅ Add Down
+   drawText(`Move Down: ${config.moveDown}`, startX + 20, startY + 290);
+   drawButton(startX + 250, startY + 270, 100, 30, "Change Key", "blue");
+ 
+   drawText(`Game Time (secs): ${config.gameTime}`, startX + 20, startY + 340);
+   drawButton(startX + 265, startY + 320, 30, 30, "-", "red");
+   drawButton(startX + 305, startY + 320, 30, 30, "+", "green");
 
-  drawText("Game Settings", startX + 10, startY + 40, "28px Arial", "white");
-  drawText(`Shoot Key: ${config.shootKey}`, startX + 20, startY + 90);
-  drawButton(startX + 250, startY + 70, 100, 30, "Change Key", "blue");
-  drawText(`Move Left: ${config.moveLeft}`, startX + 20, startY + 140);
-  drawButton(startX + 250, startY + 120, 100, 30, "Change Key", "blue");
-  drawText(`Move Right: ${config.moveRight}`, startX + 20, startY + 190);
-  drawButton(startX + 250, startY + 170, 100, 30, "Change Key", "blue");
-  drawText(`Game Time (secs): ${config.gameTime}`, startX + 20, startY + 240);
-  drawButton(startX + 265, startY + 220, 30, 30, "-", "red");
-  drawButton(startX + 305, startY + 220, 30, 30, "+", "green");
-  drawButton(startX + 20, startY + 270, 100, 30, "Start Game", "green");
-}
+   drawButton(startX + 20, startY + 370, 100, 30, "Start Game", "green");
+ }
 
 function drawText(text, x, y, font = "20px Arial", color = "white") {
   ctx.font = font;

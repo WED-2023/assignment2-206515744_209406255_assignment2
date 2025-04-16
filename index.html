@@ -18,9 +18,11 @@
       <h1>Chicken Invaders</h1>
     </header>   
     <menu>
-      <button onclick="showScreen('WelcomeScreen')">Home</button>
-      <button id="playButton">Play</button>
-      <button id="logout">Logout</button>
+      <menu>
+        <button class="menu-button" onclick="showScreen('WelcomeScreen')">Home</button>
+        <button class="menu-button" id="playButton">Play</button>
+        <button class="menu-button" id="logout">Logout</button>
+      </menu>
     </menu>
     <main>
       <!-- Welcome Screen -->
@@ -91,7 +93,7 @@
       <!-- Game Screen -->
       <div id="GameScreen" class="screen">
         <h1>GAME</h1>
-        <canvas id="theCanvas" width="1000" height="1000"></canvas>
+        <canvas id="theCanvas" width="1000" height="1000" tabindex="0"></canvas>
       </div>
     </main>
 
@@ -165,7 +167,7 @@
         <button id="closeAbout">Close</button>
       </dialog>
 
-      <button id="aboutButton">About</button>
+      <button class="menu-button" id="aboutButton">About</button>
 
       <script>
         const aboutDialog = document.getElementById("aboutDialog");

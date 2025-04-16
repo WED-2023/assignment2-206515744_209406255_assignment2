@@ -43,5 +43,6 @@
         return;
       }
       showScreen("GameScreen");
+      document.getElementById("theCanvas").focus();
     });
   });

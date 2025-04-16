@@ -118,7 +118,12 @@ ctx = canvas.getContext("2d");
   enemyFourthRowImage.src = "static/images/enemyfourthrow.png";
 
   canvas.addEventListener("click", handleClick);
-
+  window.addEventListener("keydown", function (e) {
+    const keysToBlock = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ","Spacebar"]; // Spacebar too, if needed
+    if (keysToBlock.includes(e.code)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
   // Game controls for hero actions while playing remain unchanged.
   document.addEventListener("keydown", function(e) {
     const minX = canvas.width * 0.2 + hero.width;
@@ -591,7 +596,7 @@ function drawGame() {
   });
   drawText(`Timer: ${Math.round(config.gameTime - timeFromGameStart)}`, 10, 30, "24px Helvetica", "rgb(250, 250, 250)");
   drawText(`Lives: ${config.heroLives}`, 10, 50, "24px Helvetica", "rgb(250, 250, 250)");
-  drawText(`Score: ${gameScore}`, canvas.width / 2 - 80, 40, "40px Helvetica", "rgb(250, 250, 250)");
+  drawText(`Score: ${gameScore}`, canvas.width / 2 - 80, 40, "30px Helvetica", "rgb(250, 250, 250)");
   drawButton(canvas.width - 170, canvas.height - 60, 150, 40, "Start New Game", "orange");
 
 }

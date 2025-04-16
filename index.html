@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chicken Invaders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css" />
     <script src="static/js/ui.js"></script>
     <script src="static/js/userData.js"></script>
     <script src="static/js/signup.js"></script>
@@ -11,8 +13,15 @@
     <script src="static/js/game.js"></script>
   </head>
   <body>
-    <header>Chicken Invaders <img src="static/images/gamelogo.jpg"> </header>
-    <menu>MENU FOR THE APPLICATION PLACEHOLDER</menu>
+    <header>
+      <img src="static/images/gamelogo.jpg" alt="Game Logo" />
+      <h1>Chicken Invaders</h1>
+    </header>   
+    <menu>
+      <button onclick="showScreen('WelcomeScreen')">Home</button>
+      <button id="playButton">Play</button>
+      <button id="logout">Logout</button>
+    </menu>
     <main>
       <!-- Welcome Screen -->
       <div id="WelcomeScreen" class="screen">
@@ -39,8 +48,8 @@
       </div>
 
       <!-- Signup Screen -->
-      <div id="signupScreen" class="screen">
-        <h1>SignUp</h1>
+      <div id="SignupScreen" class="screen">
+        <h1>Sign Up</h1>
         <form id="signupForm">
           <label for="signupUsername">Username:</label>
           <input id="signupUsername" name="username" type="text" placeholder="Enter username" required />

@@ -1,4 +1,3 @@
-window.currentUser=null;
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("LoginForm");
 
@@ -15,9 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
       user = users.find(u => u.username === username && u.password === password);
       }
      if (user){
-        alert(`Welcome back, ${user.username}!`);
+        alert(`Welcome back, ${user.username}! you can now play the game`);
         window.currentUser = user;
-        showScreen("GameScreen")
       }
       else {
         event.preventDefault();

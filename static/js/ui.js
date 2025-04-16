@@ -26,7 +26,22 @@
     });
     
     showScreen("WelcomeScreen"); //for now, need to style the game
-    //showScreen("GameScreen"); //for now, need to style the game
 
-
+    document.getElementById("logout").addEventListener("click", () => {
+      if (!window.currentUser) {
+        alert("You are not logged in.");
+        return;
+      }
+      window.currentUser = null;
+      alert("Logged out successfully.");
+      showScreen("WelcomeScreen");
+    });
+    
+    document.getElementById("playButton").addEventListener("click", () => {
+      if (!window.currentUser) {
+        alert("You must be logged in to play the game.");
+        return;
+      }
+      showScreen("GameScreen");
+    });
   });

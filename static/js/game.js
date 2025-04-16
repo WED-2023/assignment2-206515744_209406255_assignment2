@@ -12,10 +12,6 @@ let gameEnded = false;
 let enemyRowMaxY = null; // Will hold the max Y for each row once bottom hits danger zone
 
 
-
-window.currentUser={username:"p",password:"testuser",firstName:"test",lastName:"test",email:"test@test.com"};
-
-
 const lasers = [];
 const enemies = [];
 const enemyLasers = [];

@@ -2,7 +2,7 @@
 let canvas, ctx;
 let bgImage, heroImage, enemyFirstRowImage, enemySecondRowImage, enemyThirdRowImage, enemyFourthRowImage;
 let gameScore = 0;
-let heroLaserSound, heroHitSound, heroKilledSound, enemyHit1, enemyHit2, enemyHit3;
+let heroLaserSound, heroHitSound, heroKilledSound, enemyHit1, enemyHit2, enemyHit3,win;
 let gameBGM;
 let showConfig = true;
 let gameInterval;
@@ -88,9 +88,11 @@ function setupGame() {
   enemyHit1 = new Audio("static/sounds/enemyhit1.mp3");
   enemyHit2 = new Audio("static/sounds/enemyhit2.mp3");
   enemyHit3 = new Audio("static/sounds/enemyhit3.mp3");
+  win = new Audio("static/sounds/win.mp3");
+  win.volume = 0.1;
   gameBGM = new Audio("static/sounds/gamebgm.mp3");
   gameBGM.loop = true;
-  gameBGM.volume = 0.1;
+  gameBGM.volume = 0.05;
 
   let loadedCount = 0;
   [bgImage, heroImage, enemyFirstRowImage, enemySecondRowImage, enemyThirdRowImage, enemyFourthRowImage].forEach(img => {
@@ -273,14 +275,13 @@ function startGameLoop() {
     draw();
     if (config.gameTime - timeFromGameStart <= 0) {
       clearInterval(gameInterval); // Stop ticking
-      if (enemies.length === 0) {
-        stopGameLoop("Champion!");
-      } else if (gameScore >= 100) {
+       if (gameScore >= 100) {
         stopGameLoop("Winner!");
       } else {
         stopGameLoop("You can do better!");
       }
     } else if (enemies.length === 0) {
+      win.play();
       stopGameLoop("Champion!");
     }
   }, intervalMs);

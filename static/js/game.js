@@ -119,7 +119,7 @@ ctx = canvas.getContext("2d");
 
   canvas.addEventListener("click", handleClick);
   window.addEventListener("keydown", function (e) {
-    const keysToBlock = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ","Spacebar"]; // Spacebar too, if needed
+    const keysToBlock = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ","Space"]; 
     if (keysToBlock.includes(e.code)) {
       e.preventDefault();
     }

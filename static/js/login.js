@@ -1,5 +1,7 @@
+window.currentUser=null;
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("LoginForm");
+
   
     form.addEventListener("submit", function (event) {
       event.preventDefault(); 
@@ -14,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
      if (user){
         alert(`Welcome back, ${user.username}!`);
+        window.currentUser = user;
         showScreen("GameScreen")
       }
       else {

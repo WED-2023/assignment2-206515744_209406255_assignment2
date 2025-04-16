@@ -3,13 +3,22 @@ let canvas, ctx;
 let bgImage, heroImage, enemyFirstRowImage, enemySecondRowImage, enemyThirdRowImage, enemyFourthRowImage;
 let gameScore = 0;
 let heroLaserSound, heroHitSound, heroKilledSound, enemyHit1, enemyHit2, enemyHit3;
+let gameBGM;
 let showConfig = true;
 let gameInterval;
 let timeFromGameStart = 0;
+let gameOverMessage = null;
+let gameEnded = false;
+
+window.currentUser={username:"p",password:"testuser",firstName:"test",lastName:"test",email:"test@test.com"};
+
 
 const lasers = [];
 const enemies = [];
 const enemyLasers = [];
+const leaderboard = [];
+
+let enemyRowSpeed,enemyLaserSpeed;
 
 const config = {
   shootKey: "Space",
@@ -72,6 +81,9 @@ function setupGame() {
   enemyHit1 = new Audio("static/sounds/enemyhit1.mp3");
   enemyHit2 = new Audio("static/sounds/enemyhit2.mp3");
   enemyHit3 = new Audio("static/sounds/enemyhit3.mp3");
+  gameBGM = new Audio("static/sounds/gamebgm.mp3");
+  gameBGM.loop = true;
+  gameBGM.volume = 0.1;
 
   let loadedCount = 0;
   [bgImage, heroImage, enemyFirstRowImage, enemySecondRowImage, enemyThirdRowImage, enemyFourthRowImage].forEach(img => {
@@ -118,6 +130,8 @@ function setupGame() {
 
 function initEnemies() {
   enemies.length = 0;
+  enemyRowSpeed=enemyRow.speed;
+  enemyLaserSpeed=enemyLaserConfig.speed;
   const rows = [400, 300, 200, 100]; // y positions for each row of enemies
   for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
     const y = rows[rowIndex];
@@ -136,7 +150,7 @@ function initEnemies() {
 function updateEnemies() {
   let shouldReverse = false;
   enemies.forEach(enemy => {
-    enemy.x += enemyRow.direction * enemyRow.speed;
+    enemy.x += enemyRow.direction * enemyRowSpeed;
     if (enemy.x + enemy.width >= canvas.width || enemy.x <= 0) {
       shouldReverse = true;
     }
@@ -147,15 +161,16 @@ function updateEnemies() {
 function tryEnemyShooting() {
   if (enemies.length === 0) return;
 
-  const leftBound = canvas.width * 0.3;
-  const rightBound = canvas.width * 0.7;
 
   // Only try shooting if no enemy laser exists or the last one has passed 75% of the canvas height
   if (enemyLasers.length === 0 || enemyLasers[enemyLasers.length - 1].y > canvas.height * 0.75) {
     // Filter enemies that are within the center 40% range
-    const eligibleEnemies = enemies.filter(enemy =>
-      enemy.x + enemy.width > leftBound && enemy.x + enemy.width < rightBound
-    );
+    const minX = canvas.width * 0.3 + hero.width;
+    const maxX = canvas.width * 0.7 - hero.width;
+    const eligibleEnemies = enemies.filter(enemy => {
+    const enemyCenter = enemy.x + enemy.width / 2;
+    return enemyCenter >= minX && enemyCenter <= maxX;
+   });
     if (eligibleEnemies.length > 0) {
       const randomIndex = Math.floor(Math.random() * eligibleEnemies.length);
       const randomEnemy = eligibleEnemies[randomIndex];
@@ -184,6 +199,7 @@ function shootEnemyLaser(enemy) {
 }
 
 function startGameLoop() {
+   gameBGM.play();
   const intervalMs = 1000 / 60; // 60 FPS
   gameInterval = setInterval(() => {
     updateLaser();
@@ -193,20 +209,20 @@ function startGameLoop() {
     timeFromGameStart += intervalMs / 1000;
     if (Math.round(timeFromGameStart) === 5) {
       console.log("5 seconds passed");
-      enemyLaserConfig.speed += 0.02;
-      enemyRow.speed += 0.02;
+      enemyRowSpeed += 0.02;
+      enemyLaserSpeed += 0.02;
     } else if (Math.round(timeFromGameStart) === 10) {
       console.log("10 seconds passed");
-      enemyLaserConfig.speed += 0.02;
-      enemyRow.speed += 0.02;
+      enemyRowSpeed += 0.02;
+      enemyLaserSpeed += 0.02;
     } else if (Math.round(timeFromGameStart) === 15) {
       console.log("15 seconds passed");
-      enemyLaserConfig.speed += 0.02;
-      enemyRow.speed += 0.02;
+      enemyRowSpeed += 0.02;
+      enemyLaserSpeed += 0.02;
     } else if (Math.round(timeFromGameStart) === 20) {
       console.log("20 seconds passed");
-      enemyLaserConfig.speed += 0.02;
-      enemyRow.speed += 0.02;
+      enemyRowSpeed += 0.02;
+      enemyLaserSpeed += 0.02;
     }
     draw();
     if (config.gameTime - timeFromGameStart <= 0) {
@@ -225,11 +241,52 @@ function startGameLoop() {
 }
 
 function stopGameLoop(message) {
-   clearInterval(gameInterval);
-   draw(); // redraw last frame
-   drawMessage(message);
- }
+   gameEnded = true;
+  clearInterval(gameInterval);
+  gameBGM.pause();
+  gameBGM.currentTime = 0;
+  gameOverMessage = message;
 
+  leaderboard.push({
+    name: `${window.currentUser.firstName} ${window.currentUser.lastName}`,
+    score: gameScore
+  });
+  leaderboard.sort((a, b) => b.score - a.score);
+  if (leaderboard.length > 5) leaderboard.length = 5;
+   draw();  // Force one last draw with the message
+ }
+ 
+ function resetGame(wasEnded) {
+   // 🚨 Prevent multiple intervals from overlapping
+   clearInterval(gameInterval);
+   // Reset state
+   enemyRowSpeed = enemyRow.speed;
+   enemyLaserSpeed = enemyLaserConfig.speed;
+
+   lasers.length = 0;
+   enemyLasers.length = 0;
+   enemies.length = 0;
+   gameScore = 0;
+   config.heroLives = 3;
+   timeFromGameStart = 0;
+   gameEnded = false;
+   gameOverMessage = null;
+   enemyRowSpeed = enemyRow.speed;
+   enemyLaserSpeed = enemyLaserConfig.speed;
+ 
+   const heroScale = 1.2;
+   hero.width = heroImage.width * heroScale;
+   hero.height = heroImage.height * heroScale;
+   const minX = canvas.width * 0.3 + hero.width;
+   const maxX = canvas.width * 0.7 - hero.width;
+   hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+   hero.y = canvas.height - hero.height - 20;
+ 
+   initEnemies();
+   startGameLoop();
+ }
+ 
+ 
 function updateLaser() {
   for (let i = lasers.length - 1; i >= 0; i--) {
     const laser = lasers[i];
@@ -270,7 +327,7 @@ function updateLaser() {
 function updateEnemyLasers() {
   for (let i = enemyLasers.length - 1; i >= 0; i--) {
     const laser = enemyLasers[i];
-    laser.y += laser.speed;
+    laser.y += enemyLaserSpeed;
     if (laser.y > canvas.height) {
       enemyLasers.splice(i, 1);
       continue;
@@ -329,45 +386,55 @@ function drawMessage(message) {
 
 //handles click events on the config menu
 function handleClick(event) {
-  if (!showConfig) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  const { startX, startY } = MENU;
-
-  // Start Game button
-  if (isInBox(x, y, startX + 20, startY + 270, 100, 30)) {
-    showConfig = false;
-    startGameLoop();
-  }
-
-  // Change Shoot Key
-  if (isInBox(x, y, startX + 250, startY + 70, 100, 30)) {
-    bindKey("shootKey");
-  }
-
-  // Change Move Left Key
-  if (isInBox(x, y, startX + 250, startY + 120, 100, 30)) {
-    bindKey("moveLeft");
-  }
-
-  // Change Move Right Key
-  if (isInBox(x, y, startX + 250, startY + 170, 100, 30)) {
-    bindKey("moveRight");
-  }
-
-  // Increase game time
-  if (isInBox(x, y, startX + 305, startY + 220, 30, 30)) {
-    config.gameTime++;
-    draw();
-  }
-
-  // Decrease game time
-  if (isInBox(x, y, startX + 265, startY + 220, 30, 30) && config.gameTime > 120) {
-    config.gameTime--;
-    draw();
-  }
-}
+   const rect = canvas.getBoundingClientRect();
+   const x = event.clientX - rect.left;
+   const y = event.clientY - rect.top;
+ 
+   // ✅ Check Start New Game button first
+   if (!showConfig && isInBox(x, y, canvas.width - 170, canvas.height - 60, 150, 40)) {
+     resetGame(gameEnded); // pass whether it ended or not
+     return;
+   }
+ 
+   // ⛔️ Now block config handling if config menu isn't showing
+   if (!showConfig) return;
+ 
+   const { startX, startY } = MENU;
+ 
+   // Start Game button
+   if (isInBox(x, y, startX + 20, startY + 270, 100, 30)) {
+     showConfig = false;
+     startGameLoop();
+   }
+ 
+   // Change Shoot Key
+   if (isInBox(x, y, startX + 250, startY + 70, 100, 30)) {
+     bindKey("shootKey");
+   }
+ 
+   // Change Move Left Key
+   if (isInBox(x, y, startX + 250, startY + 120, 100, 30)) {
+     bindKey("moveLeft");
+   }
+ 
+   // Change Move Right Key
+   if (isInBox(x, y, startX + 250, startY + 170, 100, 30)) {
+     bindKey("moveRight");
+   }
+ 
+   // Increase game time
+   if (isInBox(x, y, startX + 305, startY + 220, 30, 30)) {
+     config.gameTime++;
+     draw();
+   }
+ 
+   // Decrease game time
+   if (isInBox(x, y, startX + 265, startY + 220, 30, 30) && config.gameTime > 120) {
+     config.gameTime--;
+     draw();
+   }
+ }
+ 
 
 function isInBox(x, y, boxX, boxY, boxW, boxH) {
   return x >= boxX && x <= boxX + boxW && y >= boxY && y <= boxY + boxH;
@@ -406,14 +473,23 @@ function drawButton(x, y, width, height, label, bgColor) {
 }
 
 function draw() {
-  canvas.width = canvas.width; // Clear canvas
-  ctx.drawImage(bgImage, 0, 0);
-  if (showConfig) {
-    drawConfigMenu();
-  } else {
-    drawGame();
-  }
-}
+   canvas.width = canvas.width; // Clear canvas
+   ctx.drawImage(bgImage, 0, 0);
+   if (showConfig) {
+      drawConfigMenu();
+    } else {
+      drawGame();
+    }
+    
+    if (gameOverMessage) {
+      drawMessage(gameOverMessage);
+      drawText("Leaderboard:", canvas.width - 220, 30, "20px Helvetica", "white");
+      leaderboard.forEach((entry, i) => {
+        drawText(`${i + 1}. ${entry.name}: ${entry.score}`, canvas.width - 220, 60 + i * 25, "18px Helvetica", "white");
+      });
+    }
+ }
+ 
 
 function drawGame() {
   ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height);
@@ -443,5 +519,7 @@ function drawGame() {
   });
   drawText(`Timer: ${Math.round(config.gameTime - timeFromGameStart)}`, 10, 30, "24px Helvetica", "rgb(250, 250, 250)");
   drawText(`Lives: ${config.heroLives}`, 10, 50, "24px Helvetica", "rgb(250, 250, 250)");
-  drawText(`Score: ${gameScore}`, canvas.width / 2 - 60, 40, "40px Helvetica", "rgb(250, 250, 250)");
+  drawText(`Score: ${gameScore}`, canvas.width / 2 - 70, 40, "40px Helvetica", "rgb(250, 250, 250)");
+  drawButton(canvas.width - 170, canvas.height - 60, 150, 40, "Start New Game", "orange");
+
 }

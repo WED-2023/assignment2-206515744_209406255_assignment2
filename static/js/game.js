@@ -65,13 +65,32 @@ const enemyLaserConfig = {
 };
 //const enemyMaxY = canvas.height * 0.6 - enemyHeight;
 
-window.addEventListener("load", setupGame);
+window.addEventListener("load", () => {
+  setupGame();
+  // force an initial resize so canvas + hero bounds are correct
+  window.dispatchEvent(new Event("resize"));
+});
+window.addEventListener("resize", () => {
+  canvas.width  = Math.min(window.innerWidth - 40, 960);
+  canvas.height = Math.min(window.innerHeight - 150, 720);
+
+  const minX = canvas.width * 0.2 + hero.width;
+  const maxX = canvas.width * 0.8 - hero.width;
+  hero.x = Math.min(maxX, Math.max(minX, hero.x));
+
+  const minY = canvas.height * 0.7;
+  const maxY = canvas.height - hero.height - 20;
+  hero.y = Math.min(maxY, Math.max(minY, hero.y));
+
+  initEnemies();   
+  draw();          
+});
 
 function setupGame() {
   canvas = document.getElementById("theCanvas");
-canvas.width = Math.min(window.innerWidth - 40, 960);
-canvas.height = Math.min(window.innerHeight - 150, 720);
-ctx = canvas.getContext("2d");
+  canvas.width  = Math.min(window.innerWidth - 40, 960);
+  canvas.height = Math.min(window.innerHeight - 150, 720);
+  ctx = canvas.getContext("2d");
 
   bgImage = new Image();
   heroImage = new Image();
@@ -146,6 +165,7 @@ ctx = canvas.getContext("2d");
    }
  });
 }
+
 
 function initEnemies() {
   const enemySize = canvas.width * 0.07;  // Add at the top of initEnemies

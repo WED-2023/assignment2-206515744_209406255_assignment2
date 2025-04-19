@@ -218,3 +218,25 @@ a {
   text-shadow: 0 0 4px black;
   text-decoration: underline;
 }
+@media (max-width: 1366px) {
+  .screen, #GameScreen, #WelcomeScreen {
+    padding: 10px 0;        /* less vertical padding */
+    max-width: 95vw;        /* use more of the screen */
+  }
+  menu {
+    gap: 12px;
+    padding: 8px;
+  }
+  menu button {
+    padding: 8px 16px;
+    font-size: 1rem;
+  }
+  h1 { font-size: 1.8rem; }
+}
+
+/* When height ≤ 768px, ensure footer & menu don’t push the canvas out */
+@media (max-height: 768px) {
+  menu { padding: 5px; }
+  footer { padding: 10px; font-size: 0.8rem; }
+  canvas { margin: 10px auto; }
+}

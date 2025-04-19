@@ -34,6 +34,7 @@
       }
       window.currentUser = null;
       alert("Logged out successfully.");
+      updateWelcomeScreen(); 
       showScreen("WelcomeScreen");
     });
     
@@ -46,3 +47,21 @@
       document.getElementById("theCanvas").focus();
     });
   });
+  function updateWelcomeScreen() {
+    const authButtons = document.getElementById("authButtons");
+    const greeting = document.getElementById("greeting");
+    const welcomeUser = document.getElementById("welcomeUser");
+    const welcomeMessage = document.getElementById("welcomeMessage");
+  
+    if (window.currentUser) {
+      authButtons.style.display = "none";
+      greeting.style.display = "block";
+      welcomeUser.textContent = `Hello ${window.currentUser.firstName} ${window.currentUser.lastName}! You can now play the game`;
+      if (welcomeMessage) welcomeMessage.style.display = "none"; 
+    } else {
+      authButtons.style.display = "block";
+      greeting.style.display = "none";
+      welcomeUser.textContent = "";
+      if (welcomeMessage) welcomeMessage.style.display = "block"; 
+    }
+  }

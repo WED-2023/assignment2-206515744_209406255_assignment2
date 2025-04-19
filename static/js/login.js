@@ -6,16 +6,12 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault(); 
       const username = document.getElementById("LoginUsername").value.trim();
       const password = document.getElementById("LoginPassword").value;
-      let user=null;
-      if (username==="p" && password==="testuser"){
-        user={username:username,password:password,firstName:"test",lastName:"test",email:"test@test.com"};
-      }
-      else{
-      user = users.find(u => u.username === username && u.password === password);
-      }
-     if (user){
+      const user = users.find(u => u.username === username && u.password === password);
+      if (user) {
         alert(`Welcome back, ${user.username}! you can now play the game`);
         window.currentUser = user;
+        showScreen("WelcomeScreen");
+        updateWelcomeScreen();  
       }
       else {
         event.preventDefault();

@@ -43,10 +43,15 @@
             </a>
           </span>
         </p>
-        <p>Welcome to our game! Please login or sign up to continue.</p>
+        <p id="welcomeMessage">Welcome to our game! Please login or sign up to continue.</p>
 
-        <input id="loginButton" type="button" value="Login" />
-        <input id="signupButton" type="button" value="Sign Up" />
+        <div id="authButtons">
+          <input id="loginButton" type="button" value="Login" />
+          <input id="signupButton" type="button" value="Sign Up" />
+        </div>
+        <div id="greeting" style="display:none;">
+          <h2 id="welcomeUser"></h2>
+        </div>
       </div>
 
       <!-- Signup Screen -->

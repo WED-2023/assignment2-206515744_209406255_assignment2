@@ -1,8 +1,6 @@
-// Wait for the DOM to be fully loaded before attaching event listeners
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("signupForm");
     form.addEventListener("submit", function (event) {
-      // Grab all input values and trim whitespace
       event.preventDefault(); 
 
       const username = document.getElementById("signupUsername").value.trim();
@@ -20,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
       
       let errorMessage = "";
   
-      // Run validations
       if (!username || !password || !confirmPassword || !firstName || !lastName || !email) {
         errorMessage += "All fields are required.\n";
       } if (!passwordPattern.test(password)) {

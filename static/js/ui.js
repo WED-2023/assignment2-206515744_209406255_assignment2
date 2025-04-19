@@ -1,5 +1,5 @@
-// UI controls: screen switching & notifications
 
+// UI controls: screen switching & notifications
 function hideAllScreens() {
   document.querySelectorAll('.screen').forEach(div => {
     div.style.display = 'none';
@@ -26,12 +26,10 @@ function showNotification(msg, duration = 3000) {
   }, duration);
 }
 
-// Setup logic after DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   // Start on the welcome screen
   showScreen('WelcomeScreen');
 
-  // Button listeners
   document.getElementById('loginButton').addEventListener('click', () => showScreen('LoginScreen'));
   document.getElementById('signupButton').addEventListener('click', () => showScreen('SignupScreen'));
  document.getElementById('homeButton').addEventListener('click', () => {

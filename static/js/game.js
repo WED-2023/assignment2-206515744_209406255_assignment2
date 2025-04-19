@@ -508,7 +508,7 @@ function handleClick(event) {
    const { startX, startY } = MENU;
  
    // Start Game button
-   if (isInBox(x, y,startX + 20, startY + 370, 100, 30)) {
+   if (isInBox(x, y,startX + 20, startY + 420, 100, 30)) {
      showConfig = false;
      startGameLoop();
    }
@@ -547,6 +547,17 @@ function handleClick(event) {
      config.gameTime--;
      draw();
    }
+    // Increase hero lives
+    if (isInBox(x, y, startX + 305, startY + 370, 30, 30)) {
+      config.heroLives++;
+      draw();
+    }
+  
+    // Decrease hero lives
+    if (isInBox(x, y, startX + 265, startY + 370, 30, 30) && config.heroLives > 3) {
+      config.heroLives--;
+      draw();
+    }
  }
  
 
@@ -582,7 +593,11 @@ function drawConfigMenu() {
    drawButton(startX + 265, startY + 320, 30, 30, "-", "red");
    drawButton(startX + 305, startY + 320, 30, 30, "+", "green");
 
-   drawButton(startX + 20, startY + 370, 100, 30, "Start Game", "green");
+   drawText(`Hero Lives: ${config.heroLives}`, startX + 20, startY + 390);
+   drawButton(startX + 265, startY + 370, 30, 30, "-", "red");
+   drawButton(startX + 305, startY + 370, 30, 30, "+", "green");
+
+   drawButton(startX + 20, startY + 420, 100, 30, "Start Game", "green");
  }
 
 function drawText(text, x, y, font = "20px Arial", color = "white") {

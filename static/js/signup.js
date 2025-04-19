@@ -38,16 +38,16 @@ document.addEventListener("DOMContentLoaded", function () {
       if(!errorMessage){
         users.push({
             username: username,
-            password: password, // Store hashed in real apps!
+            password: password, 
             firstName: firstName,
             lastName: lastName,
             email: email
           });
-        alert("Signup successful!"); // Replace with actual signup logic
+          showNotification("Signup successful!");
       }
       else if (errorMessage){
         event.preventDefault(); 
-        alert(errorMessage);    
+        showNotification(errorMessage);    
       }
     });
   });

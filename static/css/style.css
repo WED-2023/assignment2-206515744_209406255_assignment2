@@ -240,3 +240,53 @@ a {
   footer { padding: 10px; font-size: 0.8rem; }
   canvas { margin: 10px auto; }
 }
+.notification {
+  /* size & positioning */
+  min-width: 300px;
+  max-width: 80%;
+  padding: 16px 24px;                /* bigger padding */
+  font-size: 1.25rem;                /* larger text */
+  line-height: 1.4;
+
+  /* look & feel */
+  background: linear-gradient(135deg, #e52d14, #ffb300);
+  background-clip: padding-box;
+  color: #000;
+  font-weight: bold;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  border-left: 6px solid #ffffff;
+
+  /* positioning */
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+
+  /* hide by default */
+  display: none;
+  opacity: 0;
+
+  /* entrance/exit animation */
+  animation: slideFade 0.5s ease-out forwards;
+}
+.notification.show {
+  display: block;
+  animation: slideFade 0.5s ease-out forwards, fadeOut 0.5s ease-in forwards 2.5s;
+}
+@keyframes slideFade {
+  from { transform: translate(-50%, -20px); opacity: 0; }
+  to   { transform: translate(-50%, 0);     opacity: 1; }
+}
+
+/* fade out at end */
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+.notification::before {
+  content: "🔔";
+  margin-right: 8px;
+  font-size: 1.5rem;
+  vertical-align: middle;
+}

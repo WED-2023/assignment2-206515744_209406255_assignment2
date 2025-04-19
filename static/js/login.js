@@ -8,14 +8,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const password = document.getElementById("LoginPassword").value;
       const user = users.find(u => u.username === username && u.password === password);
       if (user) {
-        alert(`Welcome back, ${user.username}! you can now play the game`);
+        showNotification(`Welcome back, ${user.username}! you can now play the game`);
         window.currentUser = user;
         showScreen("WelcomeScreen");
         updateWelcomeScreen();  
       }
       else {
         event.preventDefault();
-        alert("Invalid username or password.");
+        showNotification("Invalid username or password.");
       } 
     });
   });

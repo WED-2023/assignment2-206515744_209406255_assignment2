@@ -29,18 +29,18 @@
 
     document.getElementById("logout").addEventListener("click", () => {
       if (!window.currentUser) {
-        alert("You are not logged in.");
+        showNotification("You are not logged in.");
         return;
       }
       window.currentUser = null;
-      alert("Logged out successfully.");
+      showNotification("Logged out successfully.");
       updateWelcomeScreen(); 
       showScreen("WelcomeScreen");
     });
     
     document.getElementById("playButton").addEventListener("click", () => {
       if (!window.currentUser) {
-        alert("You must be logged in to play the game.");
+        showNotification("You must be logged in to play the game.");
         return;
       }
       showScreen("GameScreen");
@@ -65,3 +65,15 @@
       if (welcomeMessage) welcomeMessage.style.display = "block"; 
     }
   }
+
+  function showNotification(msg, duration = 3000) {
+    const box = document.getElementById("notification");
+    box.textContent = msg;
+    box.style.display = 'block';        // force it visible
+    box.classList.add('show');
+    setTimeout(() => {
+      box.classList.remove('show');
+      box.style.display = 'none';       // hide again after duration
+    }, duration);
+  }
+  

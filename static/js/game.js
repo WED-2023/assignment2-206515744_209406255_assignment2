@@ -63,7 +63,10 @@ const enemyLaserConfig = {
   height: 10,
   speed: 4,
 };
-//const enemyMaxY = canvas.height * 0.6 - enemyHeight;
+const startLocation={
+  x: 0,
+  y: 0,
+}
 
 window.addEventListener("load", () => {
   setupGame();
@@ -123,6 +126,8 @@ function setupGame() {
         const maxX = canvas.width * 0.8 - hero.width;
         hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
         hero.y = canvas.height - hero.height - 20;
+        startLocation.x=hero.x;
+        startLocation.y=hero.y;
         initEnemies();
         draw();
       }
@@ -166,6 +171,30 @@ function setupGame() {
  });
 }
 
+
+function resetGameState() {
+  clearInterval(gameInterval);
+  if (gameBGM) {
+    gameBGM.pause();
+    gameBGM.currentTime = 0;
+  }
+  lasers.length = 0;
+  enemyLasers.length = 0;
+  enemies.length = 0;
+  gameScore = 0;
+  config.heroLives = 3;
+  timeFromGameStart = 0;
+  gameEnded = false;
+  gameOverMessage = null;
+  enemyRowMaxY = null;
+  showConfig = true;
+  hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+  hero.y = canvas.height - hero.height - 20;
+  startLocation.x=hero.x;
+  startLocation.y=hero.y;
+  initEnemies();
+  draw();
+}
 
 function initEnemies() {
   const enemySize = canvas.width * 0.07;  // Add at the top of initEnemies
@@ -420,7 +449,8 @@ function updateEnemyLasers() {
       if (config.heroLives > 0) {
         const minX = canvas.width * 0.2 + hero.width;
         const maxX = canvas.width * 0.8 - hero.width;
-        hero.x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+        hero.x = startLocation.x;
+        hero.y = startLocation.y;
       }
       if (config.heroLives <= 0) {
          heroKilledSound.volume = 0.5;

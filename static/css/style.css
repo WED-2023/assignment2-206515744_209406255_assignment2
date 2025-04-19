@@ -3,29 +3,62 @@
 html, body {
   height: 100%;
   margin: 0;
-}
-
-body {
+  padding: 0;
   font-family: 'Orbitron', sans-serif;
-  background-color: #0B0F2B;
   color: #ffffff;
-  background-image: url('../images/background.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-color: #0B0F2B;
+  background-image: url('../images/stars.png'), url('../images/background.png');
+  background-size: cover, 4000px;
+  background-repeat: no-repeat, repeat;
+  background-position: center, 0 0;
+  animation: stars 200s linear infinite;
 }
 
-/* Game screen canvas centering */
-#GameScreen {
+@keyframes stars {
+  from { background-position: 0 0; }
+  to { background-position: -10000px 5000px; }
+}
+
+/* Game screen full centering */
+#GameScreen,
+#WelcomeScreen {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: calc(100vh - 100px);
+  padding: 40px 0;
+  width: 100%;
+  flex-direction: column;
+  text-align: center;
 }
 
-/* Headings and labels */
+canvas {
+  max-width: 960px;
+  width: 100%;
+  height: auto;
+  border: 2px solid #4C6FFF;
+  box-shadow: 0 0 12px #3A4AFF;
+  display: block;
+  margin: auto;
+}
+
+/* Make sure all screens are centered when shown */
+.screen {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.screen.active {
+  display: flex;
+}
+
 h1, h2, h3, label {
   color: #0bf59b;
   text-shadow: 0 0 6px #1a1aff;
+  text-align: center;
 }
 
 header {
@@ -41,6 +74,7 @@ header h1 {
   margin: 0;
   color: #0bf59b;
   text-shadow: 0 0 8px #4C6FFF, 0 0 12px #1a1aff;
+  text-align: center;
 }
 
 header img {
@@ -50,7 +84,6 @@ header img {
   margin: 0 auto;
 }
 
-/* Menu and buttons */
 menu {
   display: flex;
   justify-content: center;
@@ -98,7 +131,6 @@ menu button:hover {
   transform: scale(1.05);
 }
 
-/* Screens and layout */
 main {
   padding: 20px;
   min-height: 70vh;
@@ -112,16 +144,6 @@ footer {
   font-size: 0.9rem;
 }
 
-.screen {
-  display: none;
-}
-
-canvas {
-  border: 2px solid #4C6FFF;
-  box-shadow: 0 0 12px #3A4AFF;
-}
-
-/* Forms */
 form {
   display: flex;
   flex-direction: column;
@@ -152,7 +174,6 @@ input:focus {
   border-color: #6c8fff;
 }
 
-/* Submit and button inputs */
 input[type="button"],
 input[type="submit"] {
   background-color: #4C6FFF;
@@ -183,7 +204,6 @@ input:disabled {
   cursor: not-allowed;
 }
 
-/* Dialog */
 dialog {
   border: 2px solid #4C6FFF;
   box-shadow: 0 0 12px #4C6FFF;
@@ -199,7 +219,6 @@ dialog::backdrop {
   background: rgba(0, 0, 0, 0.7);
 }
 
-/* Links */
 a {
   color: #0bf59b;
   text-decoration: underline;

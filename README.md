@@ -1,6 +1,7 @@
 # Chicken Invaders (Copy)
 
 **Chicken Invaders** is a fully browser-based arcade-style shooter game built with vanilla JavaScript, HTML5 Canvas, and CSS. The player takes control of a space hero, dodging enemy lasers and eliminating alien rows to rack up a high score before time runs out!
+![Link To Deployed Website](https://wed-2023.github.io/assignment2-206515744_209406255_assignment2/)
 
 ---
 

@@ -33,9 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('loginButton').addEventListener('click', () => showScreen('LoginScreen'));
   document.getElementById('signupButton').addEventListener('click', () => showScreen('SignupScreen'));
  document.getElementById('homeButton').addEventListener('click', () => {
-  if (!showConfig) {
-    resetGameState();
-  }
     showScreen('WelcomeScreen');
   });
 

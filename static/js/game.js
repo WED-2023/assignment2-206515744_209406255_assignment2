@@ -16,6 +16,8 @@ const lasers = [];
 const enemies = [];
 const enemyLasers = [];
 const leaderboard = [];
+const keysPressed = new Set();
+
 
 let enemyRowSpeed,enemyLaserSpeed;
 
@@ -37,11 +39,10 @@ const MENU = {
 };
 
 const hero = {
-  x: 0,
-  y: 0,
+  x: 0, y: 0,
   speed: 10,
-  width: 0,
-  height: 0,
+  width: 0, height: 0,
+  rotation: 0
 };
 
 const enemyRow = {
@@ -150,27 +151,48 @@ function setupGame() {
   }, { passive: false });
   // Game controls for hero actions while playing remain unchanged.
   document.addEventListener("keydown", function(e) {
-    const minX = canvas.width * 0.2 + hero.width;
-    const maxX = canvas.width * 0.8 - hero.width;
-   const minY = canvas.height * 0.7;
-   const maxY = canvas.height - hero.height - 20;
- 
-   if (!showConfig) {
-     if (e.code === config.moveRight) {
-       hero.x = Math.min(maxX, hero.x + hero.speed);
-     } else if (e.code === config.moveLeft) {
-       hero.x = Math.max(minX, hero.x - hero.speed);
-     } else if (e.code === config.moveUp) {
-       hero.y = Math.max(minY, hero.y - hero.speed);
-     } else if (e.code === config.moveDown) {
-       hero.y = Math.min(maxY, hero.y + hero.speed);
-     } else if (e.code === config.shootKey) {
-       shootLaser();
-     }
-   }
- });
+    if (!showConfig) {
+      // Track movement keys
+      if ([config.moveUp, config.moveDown, config.moveLeft, config.moveRight].includes(e.code)) {
+        keysPressed.add(e.code);
+        moveHero();    // immediately respond on keydown
+      }
+      // Fire laser
+      else if (e.code === config.shootKey) {
+        shootLaser();
+      }
+    }
+  });  
+  document.addEventListener("keyup", function(e) {
+    keysPressed.delete(e.code);
+  });
 }
+function moveHero() {
+  const minX = canvas.width * 0.2 + hero.width;
+  const maxX = canvas.width * 0.8 - hero.width;
+  const minY = canvas.height * 0.7;
+  const maxY = canvas.height - hero.height - 20;
 
+  let dx = 0, dy = 0;
+  if (keysPressed.has(config.moveRight)) dx += 1;
+  if (keysPressed.has(config.moveLeft))  dx -= 1;
+  if (keysPressed.has(config.moveUp))    dy -= 1;
+  if (keysPressed.has(config.moveDown))  dy += 1;
+
+  // Normalize speed so diagonal isn't faster
+  if (dx !== 0 && dy !== 0) {
+    dx *= Math.SQRT1_2;
+    dy *= Math.SQRT1_2;
+  }
+
+  hero.x = Math.min(maxX, Math.max(minX, hero.x + dx * hero.speed));
+  hero.y = Math.min(maxY, Math.max(minY, hero.y + dy * hero.speed));
+
+  // Store rotation angle for drawGame
+  if (dx !== 0 || dy !== 0) {
+    hero.rotation = Math.atan2(dx, -dy);
+  }
+}
 
 function resetGameState() {
   clearInterval(gameInterval);
@@ -634,7 +656,17 @@ function draw() {
  
 
 function drawGame() {
-  ctx.drawImage(heroImage, hero.x, hero.y, hero.width, hero.height);
+  ctx.save();
+  ctx.translate(hero.x + hero.width/2, hero.y + hero.height/2);
+  ctx.rotate(hero.rotation);   // now 0 → up, π/2 → right, etc.
+  ctx.drawImage(
+    heroImage,
+    -hero.width/2,
+    -hero.height/2,
+    hero.width,
+    hero.height
+  );
+  ctx.restore();
   lasers.forEach(laser => {
     ctx.fillStyle = "red";
     ctx.fillRect(laser.x, laser.y, laser.width, laser.height);

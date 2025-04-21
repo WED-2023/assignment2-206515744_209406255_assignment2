@@ -48,7 +48,7 @@ The code is organized into modular sections:
 
 ## 📷 Screenshots
 
-added for fun a live screenshot feature for the website, it's updated every 12hours to main branch using github actions. instructions for the workflow are in `screenshot.yml` 
+added for fun a live screenshot feature for the website, it's updated every 12hours to main branch using github actions (turned off for now). instructions for the workflow are in `screenshot.yml` 
 
 ![Live Preview](./preview.png?v=1745197310)
 
